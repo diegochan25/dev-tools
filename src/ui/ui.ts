@@ -1,31 +1,32 @@
 import readline from "readline";
 
 export class UI {
-    private static reset = "\x1b[0m";
-    private static cyan = "\x1b[96m";
-    private static gray = "\x1b[90m";
-    private static green = "\x1b[92m";
-    private static red = "\x1b[91m";
-    private static yellow = "\x1b[93m";
-    private static white = "\x1b[97m";
+    public static cyan = (str: string) => "\x1b[96m" + str + "\x1b[0m";
+    public static gray = (str: string) => "\x1b[90m" + str + "\x1b[0m";
+    public static green = (str: string) => "\x1b[92m" + str + "\x1b[0m";
+    public static red = (str: string) => "\x1b[91m" + str + "\x1b[0m";
+    public static yellow = (str: string) => "\x1b[93m" + str + "\x1b[0m";
+    public static white = (str: string) => "\x1b[97m" + str + "\x1b[0m";
+
     private static cls = "\x1B[2J\x1B[0f";
     private static tab = "   ";
     private static cursor = " > ";
-
 
     public static menuSelect(options: string[], instruction: string = ""): Promise<string> {
         return new Promise((resolve) => {
             let selected = 0;
 
             const showMenu = () => {
-                process.stdout.write(this.cls);
+                process.stdout.write(UI.cls);
                 if (instruction) console.log(instruction);
                 console.log("Use ↑/↓ to navigate, Enter to select:\n");
                 options.forEach((option, i) => {
-                    const line = i === selected
-                        ? this.cyan + this.cursor + option + this.reset
-                        : this.white + this.tab + option + this.reset;
-                    console.log(line);
+                    if (i === selected) {
+                        console.log(UI.cyan(UI.cursor + option))
+                    } else {
+                        console.log(UI.white(UI.tab + option))
+                    }
+
                 });
             };
 
@@ -52,13 +53,39 @@ export class UI {
                     cleanup();
                     resolve(options[selected]);
                 } else if (key.ctrl && key.name === "c") {
-                    process.stdin.setRawMode(false);
-                    process.stdin.pause();
-                    process.stdin.off("keypress", onKey);
+                    cleanup();
                     resolve("");
                 }
             };
             process.stdin.on("keypress", onKey);
         });
     }
+    public static ask(question: string): Promise<string> {
+        return new Promise((resolve) => {
+            const sc = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
+            });
+            sc.question(question, (answer) => {
+                sc.close();
+                resolve(answer);
+            });
+        });
+    }
+
+    public static async loopAsk(question: string, validator: (answer: string) => boolean, feedback: string = "Invalid input. Try again."): Promise<string> {
+        let answer: string = "";
+        do {
+            answer = await UI.ask(question);
+            if (!validator(answer)) UI.answer(UI.red(feedback));
+        } while (!validator(answer));
+
+        return answer;
+    }
+
+
+    public static answer(message: string): void {
+        process.stdout.write(message);
+    }
 }
+
