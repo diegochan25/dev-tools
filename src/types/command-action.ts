@@ -1,0 +1,1 @@
+export type CommandAction = (args: Map<string, any>) => void
