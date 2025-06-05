@@ -38,11 +38,6 @@ export class CommandBuilder {
         return this;
     }
 
-    public addSubcommand(cmd: Command): CommandBuilder {
-        this.subcommands.push(cmd);
-        return this;
-    }
-
     public build(): Command {
         if (!this.name) {
             throw new ParserError("Command cannot be built without a name");

@@ -19,7 +19,7 @@ export class Command {
         return [
             `Command '${this.name}':`,
             this.help,
-            "-".repeat(64),
+            "-".repeat(127),
             "",
             "Positional Arguments: ",
             this.arguments.filter((a) => a instanceof Positional).reduce((acc, p) => acc + `    ${p.name}: ${p.description}\n`, "") || "None",
@@ -52,7 +52,7 @@ export class Command {
 
     public traverse(args: string[]) {
         if (args.length === 1 && ["-h", "--help"].includes(args[0])) {
-            UI.echo(UI.white(this.helpString));
+            return UI.echo(UI.white(this.helpString));
         }
         if (args.length === 0) {
             return this.action(this.parameters);
