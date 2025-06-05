@@ -12,7 +12,8 @@
         "paths": {
             "@/*": ["./src/*"],
             "@error/*": ["./src/error/*"],
-            "@cli/*": ["./src/cli/*"]
+            "@cli/*": ["./src/cli/*"],
+            "@type/*": ["src/types/*"]
         }
     }
 }
