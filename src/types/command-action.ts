@@ -1,1 +1,1 @@
-export type CommandAction = (args: Map<string, any>) => void
+export type CommandAction = (args: Map<string, any>) => void;

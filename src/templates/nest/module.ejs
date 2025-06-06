@@ -1,0 +1,14 @@
+import { Module } from "@nestjs/common";
+<% if (useController) {%>
+    import { <%- names.pascal %>Controller } from "./<%- names.kebab %>.controller";
+<%}%>
+<% if (useService) {%>
+    import { <%- names.pascal %>Service } from "./<%- names.kebab %>.service";
+<%}%>
+
+@Module({
+    imports: [],
+    controllers: [<% if (useController) {%><%- names.pascal %>Controller<%}%>],
+    providers: [<% if (useService) {%><%- names.pascal %>Service<%}%>]
+})
+export class <%- names.pascal %>Module { }

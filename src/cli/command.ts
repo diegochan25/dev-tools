@@ -1,9 +1,9 @@
 import { Entry } from "@type/entry";
 import { Argument } from "./argument";
 import { UI } from "./ui";
-import { Positional } from "./Positional";
-import { Optional } from "./Optional";
-import { Flag } from "./Flag";
+import { Positional } from "./positional";
+import { Optional } from "./optional";
+import { Flag } from "./flag";
 import { type CommandAction } from "@type/command-action";
 import { CommandBuilder } from "./command-builder";
 

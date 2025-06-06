@@ -1,0 +1,9 @@
+import { Controller } from "@nestjs/common";
+<% if (useService) {%>import { <%- names.pascal %>Service from "./<%- names.kebab %>.service"; }<%}%>
+
+@Controller(<%- names.kebab %>)
+export class <%- names.pascal %>Controller {
+    <% if (useService) {%>
+    constructor(private readonly <%- names.camel %>Service: <%- names.pascal %>Service)
+    <%}%>
+}
