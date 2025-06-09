@@ -1,9 +1,9 @@
 import { UI } from "@/cli/ui";
 
-export default function abortable(target: object, key: string, descriptor: PropertyDescriptor) {
+export function abortable(_: object, key: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
 
-    descriptor.value = async function(...args: any[]) {
+    descriptor.value = async function (...args: any[]) {
         let running: boolean = true;
         let interrupted: boolean = false;
 
@@ -25,4 +25,26 @@ export default function abortable(target: object, key: string, descriptor: Prope
     };
 
     return descriptor;
+}
+
+export function requires(property: string) {
+    return function (_: object, key: string, descriptor: PropertyDescriptor) {
+        const method = descriptor.value;
+
+        descriptor.value = function (...args: any[]) {
+            const [argMap] = args;
+
+            if (!(argMap instanceof Map)) {
+                throw new Error( `Invalid arguments passed to handler method '${key}'. Expected Map<string, any>.`);
+            }
+
+            if (!argMap.has(property)) {
+                throw new Error( `Required property '${property}' missing on handler method '${key}'.` );
+            }
+
+            return method.apply(this, args);
+        };
+
+        return descriptor;
+    };
 }

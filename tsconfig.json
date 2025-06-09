@@ -13,6 +13,7 @@
             "@/*": ["./src/*"],
             "@error/*": ["./src/error/*"],
             "@cli/*": ["./src/cli/*"],
+            "@lib/*": ["src/lib/*"],
             "@type/*": ["src/types/*"]
         }
     }

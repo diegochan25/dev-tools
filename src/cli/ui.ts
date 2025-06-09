@@ -8,26 +8,36 @@ export class UI {
     public static yellow = (str: string) => "\x1b[93m" + str + "\x1b[0m";
     public static white = (str: string) => "\x1b[97m" + str + "\x1b[0m";
 
-    private static spinner = ["◜","◠","◝","◞","◡","◟"];
+    private static spinner = ["◜", "◠", "◝", "◞", "◡", "◟"];
     private static cls = "\x1B[2J\x1B[0f";
     private static tab = "   ";
     private static cursor = " > ";
+    private static cr = "\r";
+    private static lf = "\n";
 
-    public static async showLoading<T = any>(task: () => Promise<T>, message: string = "Loading"): Promise<T> {
+
+    public static async showLoading<T = any>(
+        task: Promise<T> | ((...args: any[]) => Promise<T>),
+        message?: string
+    ): Promise<T> {
         let i = 0;
+
+        if(message) {
+            process.stdout.write(`${UI.white(message)}\n`);
+        }
 
         const interval = setInterval(() => {
             const char = UI.spinner[i % UI.spinner.length];
-            process.stdout.write(`\r${message} ${char}`);
+            process.stdout.write(`\r\x1B[2K${UI.cyan(char)}`);
             i++;
-        }, 50);
+        }, 80);
 
         try {
-            const result = await task();
+            const result = task instanceof Promise ? await task : await task();
             return result;
         } finally {
             clearInterval(interval);
-            process.stdout.write("\r\x1b[K");
+            process.stdout.write(`\r\x1B[2K`);
         }
     }
 
@@ -105,7 +115,7 @@ export class UI {
 
 
     public static echo(message: string): void {
-        process.stdout.write(message);
+        process.stdout.write(message + "\n");
     }
 }
 

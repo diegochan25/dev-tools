@@ -30,11 +30,11 @@ export class File {
     }
 
     public get filename(): string {
-        return path.basename(this.filepath).removeSuffix(path.extname(this.filepath));
+        return path.basename(this.filepath).replace(path.extname(this.filepath), "");
     }
 
     public get ext(): string {
-        return path.extname(this.filepath).removePrefix(".");
+        return path.extname(this.filepath).replace(/^\./, "");
     }
 
     public get exists(): boolean {
