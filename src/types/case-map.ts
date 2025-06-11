@@ -1,4 +1,3 @@
-
 export interface CaseMap {
     camel: string;
     pascal: string;

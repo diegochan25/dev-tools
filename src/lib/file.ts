@@ -98,12 +98,12 @@ export class File {
             throw new FileError("Create file at path '" + this.filepath + "' before appending to it.")
         }
 
-        if(this.empty) {
+        if (this.empty) {
             fs.appendFileSync(this.filepath, data, options);
         } else {
             fs.appendFileSync(this.filepath, "\n" + data, options);
         }
-        
+
         this.read();
         return this;
     }
@@ -158,15 +158,28 @@ export class File {
         return this;
     }
 
+    public rm(): void {
+        if (!this.exists) {
+            throw new FileError("Non-existent file '" + this.filepath + "' cannot be removed.");
+        }
+
+        if (fs.statSync(this.filepath).isDirectory()) {
+            throw new FileError("Path '" + this.filepath + "' is a directory, not a file.");
+        }
+
+        fs.unlinkSync(this.filepath);
+        return;
+    }
+
     public json<T = any>(): T {
         return JSON.parse(this.content) as T;
     }
 
-    public text() {
+    public text(): string {
         return this.content;
     }
 
-    public lines() {
+    public lines(): string[] {
         return this.content.split(/\r\n|\r|\n/)
     }
 }

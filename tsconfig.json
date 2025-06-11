@@ -14,6 +14,7 @@
             "@error/*": ["./src/error/*"],
             "@cli/*": ["./src/cli/*"],
             "@lib/*": ["src/lib/*"],
+            "@templates/*": ["src/templates/*"],
             "@type/*": ["src/types/*"]
         }
     }

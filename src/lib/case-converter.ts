@@ -1,4 +1,4 @@
-import { CaseMap } from "./case-map";
+import { CaseMap } from "../types/case-map";
 
 export class CaseConverter {
     private words: string[];
