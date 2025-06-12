@@ -357,6 +357,7 @@ export class NestHandler extends HandlerBase {
         if (!rootdir.exists) rootdir.makedirs();
 
         let pm: string = "";
+        let rootTemplates: { name: string, template: string }[] = [];
 
         switch (runtime) {
             case "node":
@@ -436,6 +437,13 @@ export class NestHandler extends HandlerBase {
                 );
 
                 UI.echo(UI.green("Dependencies installed!"));
+
+                rootTemplates = [
+                    { name: "Dockerfile", template: "nest/dockerfile-node.ejs" },
+                    { name: ".dockerignore", template: "nest/dockerignore.ejs" },
+                    { name: ".gitignore", template: "nest/gitignore.ejs" },
+                    { name: "tsconfig.json", template: "nest/tsconfig-node.ejs" },
+                ];
                 break;
             case "bun":
                 const bunVersion = await this.findVersion("bun", "Finding Bun...");
@@ -475,6 +483,8 @@ export class NestHandler extends HandlerBase {
 
                 UI.echo(UI.green("package.json modified!"));
 
+                new File(path.join(dirname, "index.ts")).rm();
+
                 await UI.showLoading(
                     new Subprocess([
                         "bun",
@@ -500,15 +510,14 @@ export class NestHandler extends HandlerBase {
 
                 UI.echo(UI.green("Dependencies installed!"));
 
+                rootTemplates = [
+                    { name: "Dockerfile", template: "nest/dockerfile-bun.ejs" },
+                    { name: ".dockerignore", template: "nest/dockerignore.ejs" },
+                    { name: ".gitignore", template: "nest/gitignore.ejs" },
+                    { name: "tsconfig.json", template: "nest/tsconfig-bun.ejs" },
+                ];
                 break;
         }
-
-        const rootTemplates = [
-            { name: "Dockerfile", template: "nest/dockerfile-node.ejs" },
-            { name: ".dockerignore", template: "nest/dockerignore.ejs" },
-            { name: ".gitignore", template: "nest/gitignore.ejs" },
-            { name: "tsconfig.json", template: "nest/tsconfig-node.ejs" },
-        ];
 
         const srcTemplates = [
             { name: "app.module.ts", template: "nest/module.ejs" },
