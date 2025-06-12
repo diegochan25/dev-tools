@@ -151,7 +151,7 @@ export class File {
     public read(encoding?: BufferEncoding): this {
         encoding = encoding || this.defaultEncoding;
         if (!this.exists) {
-            throw new FileError("Ensure file '" + this.filepath + "' exists before reading to it.");
+            throw new FileError("Ensure file '" + this.filepath + "' exists before reading from it.");
         }
         this.content = fs.readFileSync(this.filepath, { encoding });
 

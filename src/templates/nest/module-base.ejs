@@ -1,0 +1,9 @@
+<% data.moduleImports.forEach((i) => {%><%- i %>
+<%}); %>
+@Module({<% if (data.imports.length > 0) { %>
+    imports: [<%- data.imports.join(", ") %>],<% } %>
+    controllers: [<%- data.controllers.join(", ") %>],
+    providers: [<%- data.providers.join(", ") %>]<% if (data.exports.length > 0) { %>,
+    exports: [<%- data.exports.join(", ") %>]<% } %>
+})
+export class <%- names.pascal %>Module { }

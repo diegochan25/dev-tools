@@ -30,6 +30,10 @@ export class Directory {
         return path.dirname(this.dirpath);
     }
 
+    public get abspath(): string {
+        return path.resolve(this.dirpath);
+    }
+
     public mkdir(): this {
         if (this.exists) {
             throw new FileError("Directory '" + this.dirpath + "' already exists.");

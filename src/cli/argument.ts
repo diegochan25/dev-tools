@@ -10,5 +10,3 @@ export abstract class Argument {
         this.description = description;
     }
 }
-
-

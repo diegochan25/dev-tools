@@ -6,13 +6,14 @@ import { Optional } from "./optional";
 import { Flag } from "./flag";
 import { type CommandAction } from "@type/command-action";
 import { CommandBuilder } from "./command-builder";
+import { Primitive } from "@type/primitive";
 
 export class Command {
     name: string;
     help: string;
     subcommands: Command[] = [];
     arguments: Argument[] = [];
-    parameters: Map<string, any> = new Map();
+    parameters: Map<string, Primitive> = new Map();
     action: CommandAction;
 
     public get helpString(): string {

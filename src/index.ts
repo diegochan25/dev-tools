@@ -49,6 +49,7 @@ const nestController: Command = Command.builder()
     .addArgument(new Positional("path", "The path where the controller will be created.", 0))
     .addArgument(new Flag("flat", "Do not create a new folder for the controller's files", "--flat", "-f"))
     .addArgument(new Flag("dry-run", "Show a preliminary view of the files to be created or modified", "--dry-run", "-dr"))
+    .setAction(nestCommands.createController.bind(nestCommands))
     .build();
 
 const nestModule: Command = Command.builder()

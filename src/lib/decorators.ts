@@ -27,7 +27,7 @@ export function abortable(_: object, key: string, descriptor: PropertyDescriptor
     return descriptor;
 }
 
-export function requires(property: string) {
+export function requires(...properties: string[]) {
     return function (_: object, key: string, descriptor: PropertyDescriptor) {
         const method = descriptor.value;
 
@@ -35,12 +35,14 @@ export function requires(property: string) {
             const [argMap] = args;
 
             if (!(argMap instanceof Map)) {
-                throw new Error( `Invalid arguments passed to handler method '${key}'. Expected Map<string, any>.`);
+                throw new Error(`Invalid arguments passed to handler method '${key}'. Expected Map<string, any>.`);
             }
 
-            if (!argMap.has(property)) {
-                throw new Error( `Required property '${property}' missing on handler method '${key}'.` );
-            }
+            properties.forEach((property) => {
+                if (!argMap.has(property)) {
+                    throw new Error(`Required property '${property}' missing on handler method '${key}'.`);
+                }
+            })
 
             return method.apply(this, args);
         };
