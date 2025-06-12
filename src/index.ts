@@ -42,6 +42,7 @@ const nestResource: Command = Command.builder()
     .addArgument(new Flag("dry-run", "Show a preliminary view of the files to be created or modified", "--dry-run", "-dr"))
     .build();
 
+// devtools nest controller
 const nestController: Command = Command.builder()
     .childOf(nest)
     .setName("controller")
@@ -52,6 +53,7 @@ const nestController: Command = Command.builder()
     .setAction(nestCommands.createController.bind(nestCommands))
     .build();
 
+// devtools nest module
 const nestModule: Command = Command.builder()
     .childOf(nest)
     .setName("module")
@@ -62,6 +64,7 @@ const nestModule: Command = Command.builder()
     .setAction(nestCommands.createModule.bind(nestCommands))
     .build();
 
+// devtools nest service
 const nestService: Command = Command.builder()
     .childOf(nest)
     .setName("service")
@@ -70,6 +73,18 @@ const nestService: Command = Command.builder()
     .addArgument(new Flag("flat", "Do not create a new folder for the service's files", "--flat", "-f"))
     .addArgument(new Flag("dry-run", "Show a preliminary view of the files to be created or modified", "--dry-run", "-dr"))
     .setAction(nestCommands.createService.bind(nestCommands))
+    .build();
+
+// devtools nest entity
+const nestEntity: Command = Command.builder()
+    .childOf(nest)
+    .setName("entity")
+    .setHelp("Generate a new NestJS entity using the selected ORM's syntax.")
+    .addArgument(new Positional("path", "The path where the entity will be created.", 0))
+    .addArgument(new Flag("flat", "Do not create a new folder for the entity's files", "--flat", "-f"))
+    .addArgument(new Optional("orm", "The ORM to use when creating the entity.", "typeorm", ["typeorm", "sequelize", "prisma", "mikroorm"], "--orm"))
+    .addArgument(new Flag("dry-run", "Show a preliminary view of the files to be created or modified", "--dry-run", "-dr"))
+    .setAction(nestCommands.createEntity.bind(nestCommands))
     .build();
 
 cli.traverse(process.argv.slice(2));

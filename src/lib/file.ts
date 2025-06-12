@@ -113,7 +113,12 @@ export class File {
             throw new FileError("Create file at path '" + this.filepath + "' before appending to it.")
         }
 
-        fs.appendFileSync(this.filepath, "\n" + data.join("\n"), options);
+        if(this.empty) {
+            fs.appendFileSync(this.filepath, data.join("\n"), options);
+        } else {
+            fs.appendFileSync(this.filepath, "\n" + data.join("\n"), options);
+        }
+
         this.read();
         return this;
     }

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity(<%- names.snake %>)
+@Entity("<%- names.snake %>")
 export class <%- names.pascal %> {
     @PrimaryGeneratedColumn("uuid")
     public id?: string;

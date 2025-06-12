@@ -260,7 +260,88 @@ export class NestHandler extends HandlerBase {
 
         module.writeLines(contents);
 
-        UI.echo(UI.green("Module '" + basename + "' was successfully created."))
+        UI.echo(UI.green("Module '" + basename + "' was successfully created."));
+    }
+
+    @abortable
+    @requires("path", "flat", "orm", "dry-run")
+    public createEntity(args: Map<string, Primitive>): void {
+        const fullpath = args.get("path") as string;
+        const flat = args.get("flat") as boolean;
+        const orm = args.get("orm") as string;
+        const dryRun = args.get("dry-run") as boolean;
+
+        const [filename, dirname] = this.splitPath(fullpath, flat);
+
+        const names = CaseConverter.convert(filename);
+        const dir = new Directory(dirname);
+        const basename = `${names.kebab}.entity.ts`;
+        const entity = new File(path.join(dirname, orm === "prisma" ? "schema.prisma" : basename));
+
+        if (dryRun) {
+            UI.echo(UI.white("Dry run: nest entity"));
+            let modify = [];
+            let create = [];
+            if (dir.files().includes("schema.prisma")) {
+                modify.push("schema.prisma");
+            } else {
+                create.push("schema.prisma");
+            }
+            if (orm === "prisma") {
+                this.showPreview(dirname, {
+                    modify: modify,
+                    create: create,
+                    remove: []
+                })
+            } else {
+                this.showPreview(dirname, {
+                    modify: [],
+                    create: [basename],
+                    remove: []
+                })
+            }
+            return;
+        }
+
+        if (entity.exists && !entity.empty) {
+            UI.echo(UI.yellow(`File '${entity.basename}' already exists and is not empty. Aborting to avoid overwriting.`));
+            return
+        }
+
+        if (!dir.exists) dir.makedirs();
+        if (!entity.exists) entity.touch();
+
+        let template: string = "";
+
+        switch (orm) {
+            case "typeorm":
+                template = "nest/entity-typeorm.ejs";
+                break;
+            case "sequelize":
+                template = "nest/entity-sequelize.ejs";
+                break;
+            case "prisma":
+                template = "nest/entity-prisma.ejs";
+                break;
+            case "mikroorm":
+                template = "nest/entity-mikroorm.ejs";
+                break;
+        }
+
+        const contents = new Template(path.join(this.templatepath, template))
+            .pass({
+                names: names
+            })
+            .render()
+            .lines()
+
+        if (orm === "prisma") {
+            entity.appendLines(contents);
+            UI.echo(UI.green("File 'schema.prisma' was successfully updated with model '" + names.pascal + "'."));
+        } else {
+            entity.writeLines(contents);
+            UI.echo(UI.green("Module '" + basename + "' was successfully created."));
+        }
     }
 
     @abortable

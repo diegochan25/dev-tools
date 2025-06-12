@@ -1,0 +1,9 @@
+import { Table, Column, Model, PrimaryKey, Default, DataType } from "sequelize-typescript";
+
+@Table({ tableName: "<%- names.snake %>" })
+export class <%- names.pascal %> extends Model {
+    @PrimaryKey
+    @Default(DataType.UUIDV4)
+    @Column(DataType.UUID)
+    declare id: string;
+}

@@ -1,0 +1,3 @@
+model Server {
+  id String @id @default(uuid())
+}
