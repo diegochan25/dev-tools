@@ -7,9 +7,12 @@ import { File } from "@lib/file";
 import { Directory } from "@lib/directory";
 import { Template } from "@templates/template";
 import { CaseConverter } from "@lib/case-converter";
-import { NestModuleDecorator } from "@/types/nest-module-decorator";
-import { Primitive } from "@/types/primitive";
-import { CaseMap } from "@/types/case-map";
+import { NestModuleDecorator } from "@type/nest-module-decorator";
+import { Primitive } from "@type/primitive";
+import { CaseMap } from "@type/case-map";
+import { FileModifyResults } from "@type/file-modify-results";
+import { FileModifyTemplate } from "@type/file-create-template";
+import { Mode } from "@/types/mode";
 
 export class NestHandler extends HandlerBase {
     private scanModule(lines: string[]): NestModuleDecorator {
@@ -61,6 +64,43 @@ export class NestHandler extends HandlerBase {
             })
             .render()
             .lines();
+    }
+
+    @abortable
+    @requires("path", "flat", "dry-run")
+    public createModule(args: Map<string, Primitive>): void {
+        const fullpath = args.get("path") as string;
+        const flat = args.get("flat") as boolean;
+        const dryRun = args.get("dry-run") as boolean;
+
+        const [dirname, filename] = this.splitPath(fullpath, flat);
+        const names = CaseConverter.convert(filename);
+
+        const files: FileModifyTemplate[] = [
+            { filename: `${names.kebab}.module.ts`, template: "nest/module.ejs", mode: Mode.Write }
+        ];
+
+        const workdir = new Directory(dirname);
+
+        if (dryRun) {
+            this.dryRun(workdir, files);
+            return;
+        }
+
+        const results: FileModifyResults[] = this.writeFiles(workdir, files, {
+            names: names,
+            useController: workdir.files().includes(`${names.kebab}.controller.ts`),
+            useService: workdir.files().includes(`${names.kebab}.service.ts`),
+        });
+
+        const failures = results.filter((r) => !r.success);
+
+        if (failures.length === 0) {
+            UI.echo(UI.green("Resource '" + filename + "' was successfully created with files '" + files.map((f) => f.filename).join("', '") + "'."));
+        } else {
+            UI.echo(UI.red("There was a problem creating module '" + names.pascal + "Module'. The following files were not properly modified: "));
+            UI.echo(UI.red(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", "")));
+        }
     }
 
     @abortable
@@ -216,7 +256,7 @@ export class NestHandler extends HandlerBase {
         UI.echo(UI.green("Service '" + basename + "' was successfully created."))
     }
 
-    @abortable
+    /*@abortable
     @requires("path", "flat", "dry-run")
     public createModule(args: Map<string, Primitive>) {
         const fullpath = args.get("path") as string;
@@ -261,7 +301,7 @@ export class NestHandler extends HandlerBase {
         module.writeLines(contents);
 
         UI.echo(UI.green("Module '" + basename + "' was successfully created."));
-    }
+    }*/
 
     @abortable
     @requires("path", "flat", "orm", "dry-run")
@@ -342,6 +382,54 @@ export class NestHandler extends HandlerBase {
             entity.writeLines(contents);
             UI.echo(UI.green("Module '" + basename + "' was successfully created."));
         }
+    }
+
+    @abortable
+    @requires("path", "flat", "dry-run")
+    public createResource(args: Map<string, Primitive>): void {
+        const fullpath = args.get("path") as string;
+        const flat = args.get("flat") as boolean;
+        const dryRun = args.get("dry-run") as boolean;
+
+        const [filename, dirname] = this.splitPath(fullpath, flat);
+        const rootdir = new Directory(dirname);
+
+        const names = CaseConverter.convert(filename);
+
+        const files = [
+            { filename: `${names.kebab}.module.ts`, template: "nest/module.ejs" },
+            { filename: `${names.kebab}.service.ts`, template: "nest/service.ejs" },
+            { filename: `${names.kebab}.controller.ts`, template: "nest/controller.ejs" }
+        ];
+
+        if (dryRun) {
+            UI.echo(UI.white("Dry run: nest resource"));
+            this.showPreview(dirname, {
+                modify: [],
+                create: [...files.map((f) => f.filename)],
+                remove: []
+            });
+            return;
+        }
+
+        if (!rootdir.exists) rootdir.makedirs();
+
+        files.forEach((f) => {
+            const file = new File(path.join(dirname, f.filename));
+            if (!file.exists) file.touch();
+            const contents = new Template(path.join(this.templatepath, f.template))
+                .pass({
+                    names: names,
+                    useController: true,
+                    useControllerPath: true,
+                    useService: true
+                })
+                .render()
+                .lines()
+            file.writeLines(contents);
+        });
+
+        UI.echo(UI.green("Resouce '" + filename + "' was successfully created with files '" + files.map((f) => f.filename).join("', '") + "'."))
     }
 
     @abortable
