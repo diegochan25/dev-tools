@@ -9,12 +9,13 @@ import { CommandBuilder } from "./command-builder";
 import { Primitive } from "@type/primitive";
 
 export class Command {
-    name: string;
-    help: string;
-    subcommands: Command[] = [];
-    arguments: Argument[] = [];
-    parameters: Map<string, Primitive> = new Map();
-    action: CommandAction;
+    public static readonly cliVersion = "0.0.1"
+    public name: string;
+    public help: string;
+    public subcommands: Command[] = [];
+    public arguments: Argument[] = [];
+    private parameters: Map<string, Primitive> = new Map();
+    public action: CommandAction;
 
     public get helpString(): string {
         return [
@@ -49,7 +50,6 @@ export class Command {
     public static builder(): CommandBuilder {
         return new CommandBuilder();
     }
-
 
     public traverse(args: string[]) {
         if (args.length === 1 && ["-h", "--help"].includes(args[0])) {

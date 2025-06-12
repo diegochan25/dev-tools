@@ -3,6 +3,8 @@ import type { CommandAction } from "@/types/command-action";
 import { Argument } from "./argument";
 import { Command } from "./command";
 import { UI } from "./ui";
+import { Flag } from "./flag";
+import { Primitive } from "@/types/primitive";
 
 
 export class CommandBuilder {
@@ -57,9 +59,16 @@ export class CommandBuilder {
     }
 
     public static buildRoot(): Command {
-        return new Command(
-            process.argv[1],
+        const cli = new Command(
+            "devtools",
             "File creation utilities for languages and frameworks"
         );
+
+        cli.arguments.push(new Flag("version", "Show the version of the CLI tool.", "--version", "-v"));
+        cli.action = (args: Map<string, Primitive>) => {
+            if (args.get("version")) UI.echo(UI.white(`devtools v${Command.cliVersion}`));
+        }
+
+        return cli;
     }
 }

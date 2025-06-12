@@ -1,4 +1,4 @@
-#! usr/bin/env bun
+#! /usr/bin/env bun
 
 import { Command } from "@cli/command";
 import { CommandBuilder } from "@cli/command-builder";
