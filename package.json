@@ -1,37 +1,38 @@
 {
-  "name": "dev-tools",
-  "module": "src/index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "bin": {
-    "devtools": "src/index.ts"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "@types/ejs": "^3.1.5",
-    "ejs": "^3.1.10"
-  },
-  "version": "1.0.0",
-  "description": "To install dependencies:",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "exe": "bun link && bun install --global ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/type-crafters/dev-tools.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/type-crafters/dev-tools/issues"
-  },
-  "homepage": "https://github.com/type-crafters/dev-tools#readme"
+    "name": "dev-tools",
+    "module": "src/index.ts",
+    "type": "module",
+    "private": true,
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "bin": {
+        "devtools": "src/index.ts"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "dependencies": {
+        "@types/ejs": "^3.1.5",
+        "ejs": "^3.1.10"
+    },
+    "version": "1.0.0",
+    "description": "To install dependencies:",
+    "main": "src/main.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "tsx src/main.ts",
+        "dev": "tsx watch src/main.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/type-crafters/dev-tools.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/type-crafters/dev-tools/issues"
+    },
+    "homepage": "https://github.com/type-crafters/dev-tools#readme"
 }

@@ -59,6 +59,7 @@ const nestModule: Command = Command.builder()
     .addArgument(new Positional("path", "The path where the module will be created.", 0))
     .addArgument(new Flag("flat", "Do not create a new folder for the module's files", "--flat", "-f"))
     .addArgument(new Flag("dry-run", "Show a preliminary view of the files to be created or modified", "--dry-run", "-dr"))
+    .setAction(nestCommands.createModule.bind(nestCommands))
     .build();
 
 const nestService: Command = Command.builder()
@@ -68,6 +69,7 @@ const nestService: Command = Command.builder()
     .addArgument(new Positional("path", "The path where the service will be created.", 0))
     .addArgument(new Flag("flat", "Do not create a new folder for the service's files", "--flat", "-f"))
     .addArgument(new Flag("dry-run", "Show a preliminary view of the files to be created or modified", "--dry-run", "-dr"))
+    .setAction(nestCommands.createService.bind(nestCommands))
     .build();
 
 cli.traverse(process.argv.slice(2));

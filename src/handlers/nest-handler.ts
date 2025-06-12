@@ -9,6 +9,7 @@ import { Template } from "@templates/template";
 import { CaseConverter } from "@lib/case-converter";
 import { NestModuleDecorator } from "@/types/nest-module-decorator";
 import { Primitive } from "@/types/primitive";
+import { CaseMap } from "@/types/case-map";
 
 export class NestHandler extends HandlerBase {
     private scanModule(lines: string[]): NestModuleDecorator {
@@ -52,10 +53,10 @@ export class NestHandler extends HandlerBase {
         return module;
     }
 
-    private renderModule(name: string, module: NestModuleDecorator): string[] {
+    private renderModule(names: CaseMap, module: NestModuleDecorator): string[] {
         return new Template(path.join(this.templatepath, "nest/module-base.ejs"))
             .pass({
-                names: CaseConverter.convert(name),
+                names: names,
                 data: module
             })
             .render()
@@ -76,7 +77,9 @@ export class NestHandler extends HandlerBase {
         const basename = `${names.kebab}.controller.ts`;
         const modulename = `${names.pascal}Controller`;
         const controller = new File(path.join(dirname, basename));
-        const module = dir.files().find((file) => file.endsWith(".module.ts"));
+        const module = dir.files().find((file) => file == (`${names.kebab}.module.ts`))
+            ||
+            dir.files().find((file) => file.endsWith(".module.ts"));
 
         if (dryRun) {
             UI.echo(UI.white("Dry run: nest controller"));
@@ -92,34 +95,172 @@ export class NestHandler extends HandlerBase {
 
         if (controller.exists && !controller.empty) {
             UI.echo(UI.yellow(`File '${controller.basename}' already exists and is not empty. Aborting to avoid overwriting.`));
+            return;
         }
 
         if (!dir.exists) dir.makedirs();
         if (!controller.exists) controller.touch();
 
-        const contents = new Template(path.join(this.templatepath, "nest/controller.ts"))
+        const contents = new Template(path.join(this.templatepath, "nest/controller.ejs"))
             .pass({
                 names: names,
-                useService: dir.files().includes(`${names.kebab}.service.ts`)
+                useService: dir.files().includes(`${names.kebab}.service.ts`),
+                useControllerPath: true
             })
             .render()
             .lines()
         controller.writeLines(contents);
 
         if (module) {
+            UI.echo(
+                UI.white("Attaching ") +
+                UI.cyan(modulename) +
+                UI.white(" to module at ") +
+                UI.cyan(module) +
+                UI.white("...")
+            )
             const moduleData = this.scanModule(
                 new File(path.resolve(path.join(dirname, module)))
                     .read()
                     .lines()
             );
 
-            if(!moduleData.controllers.find((c) => c === `${names.pascal}Controller`)) {
-                moduleData.controllers.push(`${names.pascal}Controller`);
+            if (!moduleData.controllers.find((c) => c === modulename)) {
+                moduleData.moduleImports.push(`import { ${modulename} } from "./${names.kebab}.controller";`)
+                moduleData.controllers.push(modulename);
             }
+            new File(path.join(dirname, module)).writeLines(
+                this.renderModule(names, moduleData)
+            );
         } else {
             UI.echo(UI.yellow(`No module was found in the directory '${dir.abspath}'. Consider creating a module before implementing '${names.pascal}Controller'.`));
 
         }
+
+        UI.echo(UI.green("Controller '" + basename + "' was successfully created."))
+    }
+
+    @abortable
+    @requires("path", "flat", "dry-run")
+    public createService(args: Map<string, Primitive>) {
+        const fullpath = args.get("path") as string;
+        const flat = args.get("flat") as boolean;
+        const dryRun = args.get("dry-run") as boolean;
+
+        const [filename, dirname] = this.splitPath(fullpath, flat);
+
+        const names = CaseConverter.convert(filename);
+        const dir = new Directory(dirname);
+        const basename = `${names.kebab}.service.ts`;
+        const modulename = `${names.pascal}Service`;
+        const service = new File(path.join(dirname, basename));
+        const module = dir.files().find((file) => file == (`${names.kebab}.module.ts`))
+            ||
+            dir.files().find((file) => file.endsWith(".module.ts"));
+
+        if (dryRun) {
+            UI.echo(UI.white("Dry run: nest service"));
+            let modify = [];
+            if (module) modify.push(module);
+            this.showPreview(dirname, {
+                modify: modify,
+                create: [basename],
+                remove: []
+            })
+            return;
+        }
+
+        if (service.exists && !service.empty) {
+            UI.echo(UI.yellow(`File '${service.basename}' already exists and is not empty. Aborting to avoid overwriting.`));
+            return
+        }
+
+        if (!dir.exists) dir.makedirs();
+        if (!service.exists) service.touch();
+
+        const contents = new Template(path.join(this.templatepath, "nest/service.ejs"))
+            .pass({
+                names: names
+            })
+            .render()
+            .lines()
+
+        service.writeLines(contents);
+
+        if (module) {
+            UI.echo(
+                UI.white("Attaching ") +
+                UI.cyan(modulename) +
+                UI.white(" to module at ") +
+                UI.cyan(module) +
+                UI.white("...")
+            )
+            const moduleData = this.scanModule(
+                new File(path.resolve(path.join(dirname, module)))
+                    .read()
+                    .lines()
+            );
+
+            if (!moduleData.providers.find((c) => c === modulename)) {
+                moduleData.moduleImports.push(`import { ${modulename} } from "./${names.kebab}.service";`)
+                moduleData.providers.push(modulename);
+            }
+            new File(path.join(dirname, module)).writeLines(
+                this.renderModule(names, moduleData)
+            );
+        } else {
+            UI.echo(UI.yellow(`No module was found in the directory '${dir.abspath}'. Consider creating a module before implementing '${names.pascal}Controller'.`));
+
+        }
+
+        UI.echo(UI.green("Service '" + basename + "' was successfully created."))
+    }
+
+    @abortable
+    @requires("path", "flat", "dry-run")
+    public createModule(args: Map<string, Primitive>) {
+        const fullpath = args.get("path") as string;
+        const flat = args.get("flat") as boolean;
+        const dryRun = args.get("dry-run") as boolean;
+
+        const [filename, dirname] = this.splitPath(fullpath, flat);
+
+        const names = CaseConverter.convert(filename);
+        const dir = new Directory(dirname);
+        const basename = `${names.kebab}.module.ts`;
+        const module = new File(path.join(dirname, basename));
+
+        if (dryRun) {
+            UI.echo(UI.white("Dry run: nest module"));
+
+            this.showPreview(dirname, {
+                modify: [],
+                create: [basename],
+                remove: []
+            })
+            return;
+        }
+
+        if (module.exists && !module.empty) {
+            UI.echo(UI.yellow(`File '${module.basename}' already exists and is not empty. Aborting to avoid overwriting.`));
+            return
+        }
+
+        if (!dir.exists) dir.makedirs();
+        if (!module.exists) module.touch();
+
+        const contents = new Template(path.join(this.templatepath, "nest/module.ejs"))
+            .pass({
+                names: names,
+                useController: dir.files().includes(`${names.kebab}.controller.ts`),
+                useService: dir.files().includes(`${names.kebab}.service.ts`),
+            })
+            .render()
+            .lines()
+
+        module.writeLines(contents);
+
+        UI.echo(UI.green("Module '" + basename + "' was successfully created."))
     }
 
     @abortable

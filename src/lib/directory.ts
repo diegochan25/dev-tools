@@ -68,20 +68,16 @@ export class Directory {
     }
 
     public ls(): this {
-        if (!this.exists) {
-            throw new FileError("Directory '" + this.dirpath + "' does not exist.");
+        if (this.exists) {
+            this._items = fs.readdirSync(this.dirpath);
+        } else {
+            this._items = [];
         }
-
-        this._items = fs.readdirSync(this.dirpath);
 
         return this
     }
 
     public items(): string[] {
-        if (this.ls()._items.length === 0) {
-            throw new FileError("Directory '" + this.dirpath + "' does not contain any items.")
-        }
-
         return this.ls()._items;
     }
 
