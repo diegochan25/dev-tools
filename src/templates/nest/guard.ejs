@@ -1,0 +1,11 @@
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { Observable } from "rxjs";
+
+@Injectable()
+export class <%- names.pascal %>Guard implements CanActivate {
+    public canActivate(
+        context: ExecutionContext
+    ): Promise<boolean> | Observable<boolean> {
+        return true;
+    }
+}

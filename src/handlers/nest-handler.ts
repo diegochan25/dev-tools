@@ -9,7 +9,6 @@ import { Template } from "@templates/template";
 import { CaseConverter } from "@lib/case-converter";
 import { NestModuleDecorator } from "@type/nest-module-decorator";
 import { Primitive } from "@type/primitive";
-import { CaseMap } from "@type/case-map";
 import { FileModifyResults } from "@type/file-modify-results";
 import { FileModifyTemplate } from "@type/file-create-template";
 import { Mode } from "@/types/mode";
@@ -86,10 +85,10 @@ export class NestHandler extends HandlerBase {
         const failures = results.filter((r) => !r.success);
 
         if (failures.length === 0) {
-            UI.echo(UI.green("Resource '" + filename + "' was successfully created with files '" + files.map((f) => f.filename).join("', '") + "'."));
+            UI.success("Module '" + filename + "' was successfully created.");
         } else {
-            UI.echo(UI.red("There was a problem creating module '" + names.pascal + "Module'. The following files were not properly modified: "));
-            UI.echo(UI.red(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", "")));
+            UI.error("There was a problem creating module '" + names.pascal + "Module'. The following files were not properly modified: ");
+            UI.error(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", ""));
         }
     }
 
@@ -131,7 +130,7 @@ export class NestHandler extends HandlerBase {
             moduleData.moduleImports.push(`import { ${names.pascal}Controller } from "./${names.kebab}.controller";`);
             moduleData.controllers.push(`${names.pascal}Controller`);
         } else {
-            UI.echo(UI.yellow("No module file was found in this directory. Consider registering the controller to a module."));
+            UI.warning("No module file was found in this directory. Consider registering the controller to a module.");
         }
 
         if (dryRun) {
@@ -149,10 +148,10 @@ export class NestHandler extends HandlerBase {
         const failures = results.filter((r) => !r.success);
 
         if (failures.length === 0) {
-            UI.echo(UI.green("Controlleer '" + filename + "' was successfully created."));
+            UI.success("Controlleer '" + filename + "' was successfully created.");
         } else {
-            UI.echo(UI.red("There was a problem creating resource '" + filename + "'. The following files were not properly modified: "));
-            UI.echo(UI.red(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", "")));
+            UI.error("There was a problem creating resource '" + filename + "'. The following files were not properly modified: ");
+            UI.error(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", ""));
         }
     }
 
@@ -191,10 +190,10 @@ export class NestHandler extends HandlerBase {
                     .read()
                     .lines()
             );
-            moduleData.moduleImports.push(`import { ${names.pascal}Controller } from "./${names.kebab}.controller";`);
-            moduleData.controllers.push(`${names.pascal}Controller`);
+            moduleData.moduleImports.push(`import { ${names.pascal}Service } from "./${names.kebab}.service";`);
+            moduleData.providers.push(`${names.pascal}Service`);
         } else {
-            UI.echo(UI.yellow("No module file was found in this directory. Consider registering the controller to a module."));
+            UI.warning("No module file was found in this directory. Consider registering the controller to a module.");
         }
 
         if (dryRun) {
@@ -209,10 +208,10 @@ export class NestHandler extends HandlerBase {
         const failures = results.filter((r) => !r.success);
 
         if (failures.length === 0) {
-            UI.echo(UI.green("Resource '" + filename + "' was successfully created with files '" + files.map((f) => f.filename).join("', '") + "'."));
+            UI.success("Service '" + filename + "' was successfully created.");
         } else {
-            UI.echo(UI.red("There was a problem creating resource '" + filename + "'. The following files were not properly modified: "));
-            UI.echo(UI.red(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", "")));
+            UI.error("There was a problem creating resource '" + filename + "'. The following files were not properly modified: ");
+            UI.error(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", ""));
         }
     }
 
@@ -250,10 +249,10 @@ export class NestHandler extends HandlerBase {
         const failures = results.filter((r) => !r.success);
 
         if (failures.length === 0) {
-            UI.echo(UI.green("Resource '" + filename + "' was successfully created with files '" + files.map((f) => f.filename).join("', '") + "'."));
+            UI.success("Entity '" + filename + "' was successfully created.");
         } else {
-            UI.echo(UI.red("There was a problem creating entity '" + names.pascal + "'. The following files were not properly modified: "));
-            UI.echo(UI.red(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", "")));
+            UI.error("There was a problem creating entity '" + names.pascal + "'. The following files were not properly modified: ");
+            UI.error(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", ""));
         }
     }
 
@@ -290,10 +289,10 @@ export class NestHandler extends HandlerBase {
         const failures = results.filter((r) => !r.success);
 
         if (failures.length === 0) {
-            UI.echo(UI.green("Resource '" + filename + "' was successfully created with files '" + files.map((f) => f.filename).join("', '") + "'."));
+            UI.success("Resource '" + filename + "' was successfully created with files '" + files.map((f) => f.filename).join("', '") + "'.");
         } else {
-            UI.echo(UI.red("There was a problem creating resource '" + filename + "'. The following files were not properly modified: "));
-            UI.echo(UI.red(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", "")));
+            UI.error("There was a problem creating resource '" + filename + "'. The following files were not properly modified: ");
+            UI.error(failures.reduce((acc, f) => acc + "   " + f.filename + "\n", ""));
         }
     }
 
@@ -318,23 +317,23 @@ export class NestHandler extends HandlerBase {
                 const nodeVersion = await this.findVersion("node", "Finding node...");
 
                 if (nodeVersion) {
-                    UI.echo(UI.white("Node version: ") + UI.cyan(nodeVersion));
+                    UI.echo("Node version: " + UI.cyan(nodeVersion));
                 } else {
-                    UI.echo(UI.red("Node.js was not found on this system."));
+                    UI.error("Node.js was not found on this system.");
                     return;
                 }
 
                 let npmVersion = await this.findVersion("npm", "Finding npm...");
                 if (npmVersion) {
-                    UI.echo(UI.white("npm version: ") + UI.cyan(npmVersion));
+                    UI.echo("npm version: " + UI.cyan(npmVersion));
                     pm = "npm";
                 } else {
                     npmVersion = await this.findVersion("npm.cmd");
                     if (npmVersion) {
-                        UI.echo(UI.white("npm version: ") + UI.cyan(npmVersion));
+                        UI.echo("npm version: " + UI.cyan(npmVersion));
                         pm = "npm.cmd";
                     } else {
-                        UI.echo(UI.red("npm was not found on this system."));
+                        UI.error("npm was not found on this system.");
                         return;
                     }
                 }
@@ -345,9 +344,9 @@ export class NestHandler extends HandlerBase {
                     "Creating empty project..."
                 )
 
-                UI.echo(UI.green("Created empty project!"));
+                UI.success("Created empty project!");
 
-                UI.echo(UI.white("Modifying package.json..."));
+                UI.echo("Modifying package.json...");
 
                 const nodePkgJson: File = new File(path.join(dirname, "package.json")).read();
 
@@ -362,7 +361,7 @@ export class NestHandler extends HandlerBase {
 
                 nodePkgJson.writeJson(nodePkgObj);
 
-                UI.echo(UI.green("package.json modified!"));
+                UI.success("package.json modified!");
 
                 await UI.showLoading(
                     new Subprocess([
@@ -390,7 +389,7 @@ export class NestHandler extends HandlerBase {
                         .run()
                 );
 
-                UI.echo(UI.green("Dependencies installed!"));
+                UI.success("Dependencies installed!");
 
                 rootTemplates = [
                     { name: "Dockerfile", template: "nest/dockerfile-node.ejs" },
@@ -402,9 +401,9 @@ export class NestHandler extends HandlerBase {
             case "bun":
                 const bunVersion = await this.findVersion("bun", "Finding Bun...");
                 if (bunVersion) {
-                    UI.echo(UI.white("Bun version:") + UI.cyan(bunVersion));
+                    UI.echo("Bun version:" + UI.cyan(bunVersion));
                 } else {
-                    UI.echo(UI.red("Bun was not found on this system."));
+                    UI.error("Bun was not found on this system.");
                     return;
                 }
 
@@ -416,9 +415,9 @@ export class NestHandler extends HandlerBase {
                 );
 
 
-                UI.echo(UI.green("Created empty project!"));
+                UI.success("Created empty project!");
 
-                UI.echo(UI.white("Modifying package.json..."));
+                UI.echo("Modifying package.json...");
 
                 const bunPkgJson: File = new File(path.join(dirname, "package.json")).read();
 
@@ -435,7 +434,7 @@ export class NestHandler extends HandlerBase {
 
                 bunPkgJson.writeJson(bunPkgObj);
 
-                UI.echo(UI.green("package.json modified!"));
+                UI.success("package.json modified!");
 
                 new File(path.join(dirname, "index.ts")).rm();
 
@@ -462,7 +461,7 @@ export class NestHandler extends HandlerBase {
                         .run()
                 );
 
-                UI.echo(UI.green("Dependencies installed!"));
+                UI.success("Dependencies installed!");
 
                 rootTemplates = [
                     { name: "Dockerfile", template: "nest/dockerfile-bun.ejs" },
@@ -480,7 +479,7 @@ export class NestHandler extends HandlerBase {
             { name: "main.ts", template: "nest/main.ejs" }
         ];
 
-        UI.echo(UI.white("Scaffolding files..."));
+        UI.echo("Scaffolding files...");
 
         rootTemplates.forEach((file) => {
             const content: string[] = new Template(path.join(this.templatepath, file.template))
@@ -513,8 +512,7 @@ export class NestHandler extends HandlerBase {
                 .writeLines(content);
         });
 
-        UI.echo(UI.green("Files created!"));
-
-        UI.echo(UI.green("Project '" + filename + "' was successfully created."));
+        UI.success("Files created!");
+        UI.success("Project '" + filename + "' was successfully created.");
     }
 }

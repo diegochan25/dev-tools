@@ -22,7 +22,7 @@ export class UI {
     ): Promise<T> {
         let i = 0;
 
-        if(message) {
+        if (message) {
             process.stdout.write(`${UI.white(message)}\n`);
         }
 
@@ -113,9 +113,24 @@ export class UI {
         return answer;
     }
 
+    public static success(message: string): void {
+        process.stdout.write(UI.green(message + "\n"));
+    }
+
+    public static warning(message: string): void {
+        process.stdout.write(UI.yellow(message + "\n"));
+    }
+
+    public static error(message: string): void {
+        process.stdout.write(UI.red(message + "\n"));
+    }
+
+    public static info(message: string): void {
+        process.stdout.write(UI.cyan(message + "\n"));
+    }
 
     public static echo(message: string): void {
-        process.stdout.write(message + "\n");
+        process.stdout.write(UI.white(message + "\n"));
     }
 }
 

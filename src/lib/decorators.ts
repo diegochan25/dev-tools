@@ -18,7 +18,7 @@ export function abortable(_: object, key: string, descriptor: PropertyDescriptor
             running = false;
             process.removeListener("SIGINT", stop);
             if (interrupted) {
-                UI.echo(UI.red("Process '" + key + "' interrupted by user."));
+                UI.error("Process '" + key + "' interrupted by user.");
                 process.exit(1);
             }
         }
