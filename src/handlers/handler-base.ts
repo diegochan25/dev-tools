@@ -14,10 +14,10 @@ export abstract class HandlerBase {
         return path.resolve(path.join(import.meta.dirname, "..", "templates"));
     }
 
-    protected splitPath(filepath: string, flat: boolean): [string, string] {
+    protected splitPath(filepath: string, flat: boolean): {filename: string, dirname: string} {
         const filename = path.basename(filepath);
         const dirname = path.resolve((flat ? path.dirname(filepath) : filepath));
-        return [filename, dirname];
+        return { filename: filename, dirname: dirname };
     }
 
     protected async findVersion(cmd: string, message?: string, cwd: string = ""): Promise<string> {
