@@ -20,8 +20,9 @@ export class Command {
     public get helpString(): string {
         return [
             `Command '${this.name}':`,
+            "-".repeat(this.help.length),
             this.help,
-            "-".repeat(127),
+            "-".repeat(this.help.length),
             "",
             "Positional Arguments: ",
             this.arguments.filter((a) => a instanceof Positional).reduce((acc, p) => acc + `    ${p.name}: ${p.description}\n`, "") || "None",

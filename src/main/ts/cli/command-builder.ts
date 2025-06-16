@@ -1,10 +1,10 @@
 import { ParserError } from "@/error/parser-error";
-import type { CommandAction } from "@/types/command-action";
+import type { CommandAction } from "@type/command-action";
 import { Argument } from "./argument";
 import { Command } from "./command";
 import { UI } from "./ui";
 import { Flag } from "./flag";
-import { Primitive } from "@/types/primitive";
+import { Primitive } from "@type/primitive";
 
 
 export class CommandBuilder {
@@ -17,6 +17,11 @@ export class CommandBuilder {
 
     public childOf(parent: Command): CommandBuilder {
         this.parent = parent;
+        return this;
+    }
+
+    public addChild(child: Command): CommandBuilder {
+        this.subcommands.push(child);
         return this;
     }
 
@@ -47,14 +52,11 @@ export class CommandBuilder {
         if (!this.help) {
             throw new ParserError("Command cannot be built without a help string");
         }
-        if (!this.parent) {
-            throw new ParserError("Command cannot be built without a parent command");
-        }
 
         const command = new Command(this.name, this.help, this.action);
         command.arguments = this.arguments;
         command.subcommands = this.subcommands;
-        this.parent.subcommands.push(command);
+        if (this.parent) this.parent.subcommands.push(command);
         return command;
     }
 

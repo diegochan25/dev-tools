@@ -1,4 +1,4 @@
-import { Entry } from "@type/entry";
+import { Entry } from "@/main/ts/types/entry";
 
 export abstract class Argument {
     public name: string;

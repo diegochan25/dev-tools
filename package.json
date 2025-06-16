@@ -1,13 +1,13 @@
 {
     "name": "dev-tools",
-    "module": "src/index.ts",
+    "module": "src/main.ts",
     "type": "module",
     "private": true,
     "devDependencies": {
         "@types/bun": "latest"
     },
     "bin": {
-        "devtools": "./src/index.ts"
+        "devtools": "./src/main/ts/index.ts"
     },
     "peerDependencies": {
         "typescript": "^5"
@@ -18,11 +18,8 @@
     },
     "version": "1.0.0",
     "description": "To install dependencies:",
-    "main": "src/main.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "tsx src/main.ts",
-        "dev": "tsx watch src/main.ts"
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
         "type": "git",

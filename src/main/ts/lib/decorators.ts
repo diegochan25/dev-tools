@@ -35,7 +35,7 @@ export function requires(...properties: string[]) {
             const [argMap] = args;
 
             if (!(argMap instanceof Map)) {
-                throw new Error(`Invalid arguments passed to handler method '${key}'. Expected Map<string, any>.`);
+                throw new Error("Expected Map<string, Primitive>. but got '" + argMap.constructor.name + "'.");
             }
 
             properties.forEach((property) => {

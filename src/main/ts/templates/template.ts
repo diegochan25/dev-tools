@@ -1,4 +1,4 @@
-import { File } from "@lib/file";
+import { File } from "@/system/file";
 import ejs from "ejs";
 
 

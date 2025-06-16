@@ -96,7 +96,7 @@ export class UI {
                 input: process.stdin,
                 output: process.stdout
             });
-            sc.question(question, (answer) => {
+            sc.question(question + "\n", (answer) => {
                 sc.close();
                 resolve(answer);
             });
