@@ -1,15 +1,21 @@
-import { Entry } from "@type/entry";
+import { Entry, PositionalArgs } from "@/types";
 import { Argument } from "./argument";
 import { UI } from "./ui";
-
 
 export class Positional extends Argument {
     public index: number;
     public options: string[];
-    constructor(name: string, description: string, index: number, options: string[] = []) {
+
+    constructor({
+        name,
+        description,
+        index,
+        options
+    }: PositionalArgs) {
         super(name, description);
+
         this.index = index;
-        this.options = options;
+        this.options = options || [];
     }
 
     public capture(args: string[]): Entry<string, any> {

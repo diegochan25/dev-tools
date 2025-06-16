@@ -1,4 +1,4 @@
-import { Entry } from "@type/entry";
+import { Entry } from "@/types";
 import { Argument } from "./argument";
 import { UI } from "./ui";
 

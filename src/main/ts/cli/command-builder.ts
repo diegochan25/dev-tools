@@ -1,10 +1,9 @@
 import { ParserError } from "@/error/parser-error";
-import type { CommandAction } from "@type/command-action";
+import type { CommandAction, Primitive } from "@/types";
 import { Argument } from "./argument";
 import { Command } from "./command";
 import { UI } from "./ui";
 import { Flag } from "./flag";
-import { Primitive } from "@type/primitive";
 
 
 export class CommandBuilder {

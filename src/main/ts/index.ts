@@ -2,7 +2,7 @@
 
 import { Command } from "@cli/command";
 import { CommandBuilder } from "@cli/command-builder";
-import { NestProject } from "./handlers/nest/project";
+import { NestProject } from "./handlers/nest/nest-project";
 
 // devtools
 const cli = CommandBuilder.buildRoot();

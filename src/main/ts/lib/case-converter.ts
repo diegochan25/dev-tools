@@ -1,4 +1,4 @@
-import { CaseMap } from "../types/case-map";
+import { CaseMap } from "@/types";
 
 export class CaseConverter {
     public static convert(input: string): CaseMap {

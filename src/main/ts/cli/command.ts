@@ -1,12 +1,10 @@
-import { Entry } from "@type/entry";
+import { CommandAction, Entry, Primitive } from "@/types";
 import { Argument } from "./argument";
 import { UI } from "./ui";
 import { Positional } from "./positional";
 import { Optional } from "./optional";
 import { Flag } from "./flag";
-import { type CommandAction } from "@type/command-action";
 import { CommandBuilder } from "./command-builder";
-import { Primitive } from "@type/primitive";
 
 export class Command {
     public static readonly cliVersion = "0.0.1"
