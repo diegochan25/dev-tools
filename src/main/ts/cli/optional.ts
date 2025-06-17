@@ -1,19 +1,31 @@
 import { Entry } from "@/types";
 import { Argument } from "./argument";
 import { UI } from "./ui";
+import { CaseConverter } from "@/lib/case-converter";
 
+export interface OptionalArgs {
+    name: string;
+    description: string;
+    def: string;
+    options?: string[],
+    flags?: string[]
+}
 
 export class Optional extends Argument {
     public def: string;
     public options: string[];
     public flags: string[];
-    constructor(name: string, description: string, def: string, options: string[] = [], ...flags: string[]) {
+    constructor({
+        name,
+        description,
+        def,
+        options,
+        flags
+    }: OptionalArgs) {
         super(name, description);
         this.def = def;
-        this.options = options;
-        this.flags = flags.length > 0
-            ? flags.map(f => f.trim())
-            : [`--${this.name.trim()}`];
+        this.options = options || [];
+        this.flags = flags || [`--${CaseConverter.convert(name).kebab}`];
     }
 
     public capture(args: string[]): Entry<string, any> {

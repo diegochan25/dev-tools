@@ -16,7 +16,6 @@
             "@lib/*": ["src/main/ts/lib/*"],
             "@system/*": ["src/main/ts/system/*"],
             "@templates/*": ["src/main/ts/templates/*"],
-            "@type/*": ["src/main/ts/types/*"]
         }
     }
 }

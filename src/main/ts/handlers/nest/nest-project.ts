@@ -1,4 +1,4 @@
-import { Primitive } from "@type/primitive";
+import { Primitive } from "@/types";
 import { UI } from "@cli/ui";
 import { abortable, requires } from "@lib/decorators";
 import path from "path";
