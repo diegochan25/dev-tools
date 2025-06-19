@@ -1,4 +1,5 @@
 import readline from "readline";
+import util from "util";
 
 export class UI {
     public static cyan = (str: string) => "\x1b[96m" + str + "\x1b[0m";
@@ -113,24 +114,24 @@ export class UI {
         return answer;
     }
 
-    public static success(message: string): void {
-        process.stdout.write(UI.green(message + "\n"));
+    public static success(...args: any[]): void {
+        process.stdout.write(UI.green(util.format(...args) + "\n"));
     }
 
-    public static warning(message: string): void {
-        process.stdout.write(UI.yellow(message + "\n"));
+    public static warning(...args: any[]): void {
+        process.stdout.write(UI.yellow(util.format(...args) + "\n"));
     }
 
-    public static error(message: string): void {
-        process.stdout.write(UI.red(message + "\n"));
+    public static error(...args: any[]): void {
+        process.stdout.write(UI.red(util.format(...args) + "\n"));
     }
 
-    public static info(message: string): void {
-        process.stdout.write(UI.cyan(message + "\n"));
+    public static info(...args: any[]): void {
+        process.stdout.write(UI.cyan(util.format(...args) + "\n"));
     }
 
-    public static echo(message: string): void {
-        process.stdout.write(UI.white(message + "\n"));
+    public static echo(...args: any[]): void {
+        process.stdout.write(UI.white(util.format(...args) + "\n"));
     }
 }
 

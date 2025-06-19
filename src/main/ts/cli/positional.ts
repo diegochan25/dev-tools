@@ -1,10 +1,10 @@
-import { Entry, PositionalArgs } from "@/types";
+import { Entry, Enum, PositionalArgs } from "@/types";
 import { Argument } from "./argument";
 import { UI } from "./ui";
 
 export class Positional extends Argument {
     public index: number;
-    public options: string[];
+    public options: string[] | Enum;
 
     constructor({
         name,
@@ -18,15 +18,23 @@ export class Positional extends Argument {
         this.options = options || [];
     }
 
-    public capture(args: string[]): Entry<string, any> {
-        if (!args[this.index]) {
-            UI.echo(UI.red(`A value for required parameter '${this.name}' was not provided.`));
+    public validate(value: string): boolean {
+        if (this.options instanceof Array) {
+            return this.options.length === 0 || this.options.includes(value);
+        } else {
+            return Object.values(this.options).includes(value);
         }
+    }
+
+    public capture(args: string[]): Entry<string, any> {
+
         const value = args[this.index];
 
-        if (this.options.length > 0 && !this.options.includes(value)) {
-            UI.echo(UI.red(`Invalid value '${value}' for required argument '${this.name}'. Choose from '${this.options.join("', '")}'.`));
+        if (value && this.validate(value)) { 
+            return new Entry(this.name, value);
+        } else {
+            UI.error("Positional argument '%s' was not provided a valid option.", this.name);
+            process.exit(1);
         }
-        return new Entry(this.name, value);
     }
 }

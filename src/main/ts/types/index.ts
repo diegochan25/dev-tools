@@ -50,11 +50,20 @@ export interface NestModuleDecorator {
     exports: string[];
 }
 
+export enum PackageManagers {
+    npm = "npm",
+    yarn = "yarn",
+    pnpm = "pnpm",
+    bun = "bun"
+}
+
+export type Enum = Record<string, string | number>;
+
 export interface PositionalArgs {
     name: string;
     description: string;
     index: number;
-    options?: string[];
+    options?: string[] | Enum;
 }
 
 

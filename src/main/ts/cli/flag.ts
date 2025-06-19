@@ -21,6 +21,8 @@ export class Flag extends Argument {
         this.flags = flags || [`--${CaseConverter.convert(name).kebab}`];
     }
 
+    public validate = (value: string) => true;
+
     
     public capture(args: string[]): Entry<string, boolean> {
         return new Entry(this.name, args.some((a) => this.flags.includes(a)));
