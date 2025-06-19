@@ -42,6 +42,7 @@ export class Optional extends Argument {
             if (this.flags.includes(args[i])) {
                 if (i + 1 >= args.length || args[i + 1].startsWith("-")) {
                     UI.echo(UI.red(`Optional argument '${this.name}' was not passed with a value.`));
+                    process.exit(1);
                 }
                 value = args[i + 1];
                 break;
@@ -55,7 +56,7 @@ export class Optional extends Argument {
                 UI.error("Invalid option '%s' for optional argument '%s'", value, this.name)
                 process.exit(1);
             }
-        } else {
+        } else { 
             return new Entry(this.name, this.base);
         }
     }

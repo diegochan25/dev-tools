@@ -3,7 +3,7 @@ import { Argument } from "./argument";
 import { UI } from "./ui";
 import { Positional } from "./positional";
 import { Optional } from "./optional";
-import { Flag } from "./flag";
+import { Switch } from "./switch";
 import { CommandBuilder } from "./command-builder";
 
 export class Command {
@@ -29,7 +29,7 @@ export class Command {
             this.arguments.filter((a) => a instanceof Optional).reduce((acc, o) => acc + `    ${o.name}: ${o.description}\n`, "") || "None",
             "",
             "Flags: ",
-            this.arguments.filter((a) => a instanceof Flag).reduce((acc, f) => acc + `    ${f.name}: ${f.description}\n`, "") || "None",
+            this.arguments.filter((a) => a instanceof Switch).reduce((acc, f) => acc + `    ${f.name}: ${f.description}\n`, "") || "None",
             "",
             "Subcommands: ",
             this.subcommands.reduce((acc, cmd) => acc + `   ${cmd.name}: ${cmd.help}\n`, "") || "None"

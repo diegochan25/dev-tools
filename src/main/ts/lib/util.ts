@@ -17,3 +17,5 @@ export const findVersion = async (cmd: string, cwd: string, message?: string): P
         return "";
     }
 }
+
+export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

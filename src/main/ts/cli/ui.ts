@@ -1,3 +1,4 @@
+import { Primitive } from "@/types";
 import readline from "readline";
 import util from "util";
 
@@ -114,24 +115,33 @@ export class UI {
         return answer;
     }
 
-    public static success(...args: any[]): void {
+    public static success(...args: any[]): typeof UI {
         process.stdout.write(UI.green(util.format(...args) + "\n"));
+        return this;
     }
 
-    public static warning(...args: any[]): void {
+    public static warning(...args: any[]): typeof UI {
         process.stdout.write(UI.yellow(util.format(...args) + "\n"));
+        return this;
     }
 
-    public static error(...args: any[]): void {
+    public static error(...args: any[]): typeof UI {
         process.stdout.write(UI.red(util.format(...args) + "\n"));
+        return this;
     }
 
-    public static info(...args: any[]): void {
+    public static info(...args: any[]): typeof UI {
         process.stdout.write(UI.cyan(util.format(...args) + "\n"));
+        return this;
     }
 
-    public static echo(...args: any[]): void {
+    public static echo(...args: any[]): typeof UI {
         process.stdout.write(UI.white(util.format(...args) + "\n"));
+        return this;
+    }
+    
+    public static exit(code?: string | number): never {
+        return process.exit(code);
     }
 }
 

@@ -3,20 +3,20 @@ import { Argument } from "./argument";
 import { CaseConverter } from "@/lib/case-converter";
 
 
-export interface FlagArgs {
+export interface SwitchArgs {
     name: string;
     description: string;
     flags?: string[];
 }
 
-export class Flag extends Argument {
+export class Switch extends Argument {
     public flags: string[];
 
     constructor({
         name,
         description,
         flags
-    }: FlagArgs) {
+    }: SwitchArgs) {
         super(name, description);
         this.flags = flags || [`--${CaseConverter.convert(name).kebab}`];
     }

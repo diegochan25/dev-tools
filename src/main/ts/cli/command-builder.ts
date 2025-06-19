@@ -3,7 +3,7 @@ import type { CommandAction, Primitive } from "@/types";
 import { Argument } from "./argument";
 import { Command } from "./command";
 import { UI } from "./ui";
-import { Flag } from "./flag";
+import { Switch } from "./switch";
 
 
 export class CommandBuilder {
@@ -65,7 +65,11 @@ export class CommandBuilder {
             "File creation utilities for languages and frameworks"
         );
 
-        cli.arguments.push(new Flag("version", "Show the version of the CLI tool.", "--version", "-v"));
+        cli.arguments.push(new Switch({
+            name: "version",
+            description: "Show the version of the CLI tool.",
+            flags: ["--version", "-v"]
+        }));
         cli.action = (args: Map<string, Primitive>) => {
             if (args.get("version")) UI.echo(UI.white(`devtools v${Command.cliVersion}`));
         }

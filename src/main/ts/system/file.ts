@@ -4,12 +4,11 @@ import path from "path";
 
 export class File {
     private filepath: string;
-    private defaultEncoding: BufferEncoding;
+    private static defaultEncoding: BufferEncoding = "utf-8";
     private content: string;
 
-    constructor(filepath: string, defaultEncoding?: BufferEncoding) {
-        this.filepath = path.resolve(filepath);
-        this.defaultEncoding = defaultEncoding || "utf-8";
+    constructor(...paths: string[]) {
+        this.filepath = path.resolve(path.join(...paths));
         this.content = "";
     }
 
@@ -154,7 +153,7 @@ export class File {
     }
 
     public read(encoding?: BufferEncoding): this {
-        encoding = encoding || this.defaultEncoding;
+        encoding = encoding || File.defaultEncoding;
         if (!this.exists) {
             throw new FileError("Ensure file '" + this.filepath + "' exists before reading from it.");
         }
