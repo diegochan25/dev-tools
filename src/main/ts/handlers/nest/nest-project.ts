@@ -221,7 +221,7 @@ export class NestProject {
                 .pass({
                     names: CaseConverter.convert("app"),
                     useController: true,
-                    useControllerPath: true,
+                    useControllerPath: false,
                     useService: true
                 })
                 .render()

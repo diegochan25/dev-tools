@@ -38,7 +38,6 @@ export class NestController {
         const contents = new Template(templatepath, template.template)
             .pass({
                 names: names,
-                useController: workdir.files().some((f) => f === `${names.kebab}.controller.ts`),
                 useControllerPath: true,
                 useService: workdir.files().some((f) => f === `${names.kebab}.service.ts`)
             })
