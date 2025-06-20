@@ -1,14 +1,17 @@
-import { PackageManagers, Primitive } from "@/types";
+import { FileModifyTemplate, Mode, PackageManagers, Primitive } from "@/types";
 import { UI } from "@cli/ui";
 import { abortable, requires } from "@lib/decorators";
 import path from "path";
 import { Command } from "@cli/command";
 import { Positional } from "@cli/positional";
 import { Optional } from "@cli/optional";
-import { capitalize, findVersion } from "@/lib/util";
-import { Subprocess } from "@/system/subprocess";
-import { Directory } from "@/system/directory";
-import { File } from "@/system/file";
+import { capitalize, findVersion } from "@lib/util";
+import { Subprocess } from "@system/subprocess";
+import { Directory } from "@system/directory";
+import { File } from "@system/file";
+import { Template } from "@templates/template";
+import { templatepath } from "@lib/consts";
+import { CaseConverter } from "@lib/case-converter";
 
 export class NestProject {
     @abortable
@@ -18,6 +21,9 @@ export class NestProject {
         const packageManager = args.get("package-manager") as PackageManagers;
 
         const workdir = new Directory(path.resolve(inputpath));
+
+        if (!workdir.exists) workdir.makedirs();
+
         let name: string = path.basename(workdir.abspath);
         if (path.basename(workdir.abspath) !== path.basename(inputpath)) {
             name = await UI.ask("Enter a name for the project:");
@@ -50,36 +56,93 @@ export class NestProject {
             "@types/node",
             "typescript",
             "tsx"
-        ]
+        ];
 
-        let rootFiles: string[] = [
-            "nest/gitignore.ejs",
-            "nest/dockerignore.ejs",
-        ]
+        let rootFiles: FileModifyTemplate[] = [
+            {
+                filename: ".dockerignore",
+                template: "nest/dockerignore.ejs",
+                mode: Mode.Write
+            },
+            {
+                filename: ".gitignore",
+                template: "nest/gitignore.ejs",
+                mode: Mode.Write
+            }
+        ];
 
-        let srcFiles: string[] = [
-            "nest/controller.ejs",
-            "nest/service.ejs",
-            "nest/module.ejs",
-            "nest/main.ejs"
-        ]
+        let srcFiles: FileModifyTemplate[] = [
+            {
+                filename: "app.controller.ts",
+                template: "nest/controller.ejs",
+                mode: Mode.Write
+            },
+            {
+                filename: "app.service.ts",
+                template: "nest/service.ejs",
+                mode: Mode.Write
+            },
+            {
+                filename: "app.module.ts",
+                template: "nest/module.ejs",
+                mode: Mode.Write
+            },
+            {
+                filename: "main.ts",
+                template: "nest/main.ejs",
+                mode: Mode.Write
+            }
+        ];
 
         switch (packageManager) {
             case PackageManagers.npm:
                 runtime = "node";
                 pm = (await findVersion("npm", import.meta.dirname)) ? "npm" : "npm.cmd";
                 install = "install";
-                rootFiles.push("nest/dockerfile-node.ejs", "nest/tsconfig-node.ejs")
+                rootFiles.push(
+                    {
+                        filename: "Dockerfile",
+                        template: "nest/dockerfile-node.ejs",
+                        mode: Mode.Write
+                    },
+                    {
+                        filename: "tsconfig.json",
+                        template: "nest/tsconfig-node.ejs",
+                        mode: Mode.Write
+                    }
+                );
                 break;
             case PackageManagers.yarn:
                 runtime = "node";
                 pm = "yarn";
-                rootFiles.push("nest/dockerfile-node.ejs", "nest/tsconfig-node.ejs")
+                rootFiles.push(
+                    {
+                        filename: "Dockerfile",
+                        template: "nest/dockerfile-node.ejs",
+                        mode: Mode.Write
+                    },
+                    {
+                        filename: "tsconfig.json",
+                        template: "nest/tsconfig-node.ejs",
+                        mode: Mode.Write
+                    }
+                );
                 break;
             case PackageManagers.pnpm:
                 runtime = "node";
                 pm = "pnpm";
-                rootFiles.push("nest/dockerfile-node.ejs", "nest/tsconfig-node.ejs")
+                rootFiles.push(
+                    {
+                        filename: "Dockerfile",
+                        template: "nest/dockerfile-node.ejs",
+                        mode: Mode.Write
+                    },
+                    {
+                        filename: "tsconfig.json",
+                        template: "nest/tsconfig-node.ejs",
+                        mode: Mode.Write
+                    }
+                );
                 break;
             case PackageManagers.bun:
                 runtime = "bun";
@@ -88,9 +151,25 @@ export class NestProject {
                     test: "bun test",
                     dev: "bun src/main.ts --watch",
                     start: "bun src/main.ts"
-                }
+                };
                 devDependencies = ["@types/node"];
-                rootFiles.push("nest/dockerfile-bun.ejs", "nest/tsconfig-bun.ejs")
+                rootFiles.push(
+                    {
+                        filename: "Dockerfile",
+                        template: "nest/dockerfile-bun.ejs",
+                        mode: Mode.Write
+                    },
+                    {
+                        filename: "tsconfig.json",
+                        template: "nest/tsconfig-bun.ejs",
+                        mode: Mode.Write
+                    },
+                    {
+                        filename: "index.ts",
+                        template: "",
+                        mode: Mode.Remove
+                    }
+                );
                 break;
         }
 
@@ -119,6 +198,8 @@ export class NestProject {
         packageJson["module"] = "src/main.ts";
         packageJson["scripts"] = scripts;
 
+        jsonFile.writeJson(packageJson);
+
         UI.success("package.json modified!");
 
         await UI.showLoading(
@@ -130,6 +211,56 @@ export class NestProject {
         );
 
         UI.success("Dependencies installed!");
+
+        UI.echo("Creating project files...");
+
+        rootFiles.forEach((t) => {
+            const file = new File(workdir.abspath, t.filename);
+            file.touch();
+            const contents = new Template(templatepath, t.template)
+                .pass({
+                    names: CaseConverter.convert("app"),
+                    useController: true,
+                    useControllerPath: true,
+                    useService: true
+                })
+                .render()
+                .lines()
+            switch (t.mode) {
+                case Mode.Append:
+                    file.appendLines(contents);
+                case Mode.Create:
+                case Mode.Write:
+                    file.writeLines(contents);
+                    break;
+                case Mode.Remove:
+                    file.rm();
+                    break;
+            }
+        });
+
+        const srcdir = new Directory(workdir.abspath, "src");
+
+        if (!srcdir.exists) srcdir.makedirs();
+
+        srcFiles.forEach((t) => {
+            const file = new File(workdir.abspath, "src", t.filename);
+            file.touch();
+            file.writeLines(
+                new Template(templatepath, t.template)
+                    .pass({
+                        names: CaseConverter.convert("app"),
+                        useController: true,
+                        useControllerPath: true,
+                        useService: true
+                    })
+                    .render()
+                    .lines()
+            );
+        });
+
+        UI.success("Project files created!");
+        UI.success("Project '%s' successfully created at '%s'!", name, workdir.abspath);
 
     }
 
@@ -145,8 +276,8 @@ export class NestProject {
             .addArgument(new Optional({
                 name: "package-manager",
                 description: "The package manager that will be used when building and scaffolding the project.",
-                base: "npm",
                 options: PackageManagers,
+                base: PackageManagers.npm,
                 flags: ["--package-manager", "-pm"]
             }))
             .setAction(this.action)

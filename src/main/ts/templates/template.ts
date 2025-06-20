@@ -1,5 +1,6 @@
 import { File } from "@/system/file";
 import ejs from "ejs";
+import path from "path";
 
 
 export class Template { 
@@ -7,8 +8,8 @@ export class Template {
     private data: any = {};
     private content: string = "";
 
-    constructor(filepath: string) {
-        this.filepath = filepath;
+    constructor(...paths: string[]) {
+        this.filepath = path.join(...paths);
     }
 
     public pass(data: Record<string, any>): Template {

@@ -50,6 +50,13 @@ export interface NestModuleDecorator {
     exports: string[];
 }
 
+export enum ORMs {
+    TypeOrm = "typeorm",
+    Sequelize = "sequelize",
+    Prisma = "prisma",
+    MikroOrm = "mikroorm"
+}
+
 export enum PackageManagers {
     npm = "npm",
     yarn = "yarn",

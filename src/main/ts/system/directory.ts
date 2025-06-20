@@ -6,8 +6,8 @@ export class Directory {
     private dirpath: string;
     private _items: string[];
 
-    constructor(dirpath: string) {
-        this.dirpath = path.resolve(dirpath);
+    constructor(...paths: string[]) {
+        this.dirpath = path.resolve(path.join(...paths));
         this._items = []
     }
 
