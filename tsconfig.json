@@ -13,6 +13,7 @@
             "@/*": ["./src/main/ts/*"],
             "@error/*": ["./src/main/ts/error/*"],
             "@cli/*": ["./src/main/ts/cli/*"],
+            "@handlers/*": ["src/main/ts/handlers/*"],
             "@lib/*": ["src/main/ts/lib/*"],
             "@system/*": ["src/main/ts/system/*"],
             "@templates/*": ["src/main/ts/templates/*"],

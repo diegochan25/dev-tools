@@ -143,5 +143,6 @@ export class UI {
     public static exit(code?: string | number): never {
         return process.exit(code);
     }
+
 }
 

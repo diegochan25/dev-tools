@@ -21,7 +21,7 @@ export class Switch extends Argument {
         this.flags = flags || [`--${CaseConverter.convert(name).kebab}`];
     }
 
-    public validate = (value: string) => true;
+    public validate = (_: string) => true;
 
     
     public capture(args: string[]): Entry<string, boolean> {

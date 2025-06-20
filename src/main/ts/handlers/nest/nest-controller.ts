@@ -71,7 +71,7 @@ export class NestController {
             );
         }
 
-        UI.success("Controller '%s' successfully created!", name);
+        UI.success("Controller '%sController' successfully created at '%s'!", names.pascal, workdir.abspath);
     }
 
     public static get command(): Command {

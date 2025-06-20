@@ -36,7 +36,7 @@ export class Optional extends Argument {
         }
     }
 
-    public capture(args: string[]): Entry<string, any> | void {
+    public capture(args: string[]): Entry<string, any> {
         let value: string | undefined = undefined;
         for (let i = 0; i < args.length; i++) {
             if (this.flags.includes(args[i])) {

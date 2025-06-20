@@ -72,16 +72,16 @@ export class NestEntity {
             file.appendLines(contents);
         }
 
-        UI.success("Entity '%s' successfully created at '%s'!", name, workdir.abspath);
+        UI.success("Entity '%s' successfully created at '%s'!", names.pascal, workdir.abspath);
     }
 
     public static get command(): Command {
         return Command.builder()
             .setName("entity")
-            .setHelp("Generate a new Nest REST resource.")
+            .setHelp("Generate a new NestJS entity.")
             .addArgument(new Positional({
                 name: "path",
-                description: "The path where the project will be created.",
+                description: "The path where the entity will be created.",
                 index: 0
             }))
             .addArgument(new Optional({

@@ -43,16 +43,16 @@ export class NestModule {
 
         file.writeLines(contents);
 
-        UI.success("Resource '%s' successfully created!", name);
+        UI.success("Module '%sModule' successfully created at '%s'!", names.pascal, workdir.abspath);
     }
 
     public static get command(): Command {
         return Command.builder()
-            .setName("resource")
-            .setHelp("Generate a new Nest REST resource.")
+            .setName("module")
+            .setHelp("Generate a new NestJS module.")
             .addArgument(new Positional({
                 name: "path",
-                description: "The path where the project will be created.",
+                description: "The path where the module will be created.",
                 index: 0
             }))
             .setAction(this.action)

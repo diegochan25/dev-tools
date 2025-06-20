@@ -23,13 +23,13 @@ export class Command {
             "-".repeat(this.help.length),
             "",
             "Positional Arguments: ",
-            this.arguments.filter((a) => a instanceof Positional).reduce((acc, p) => acc + `    ${p.name}: ${p.description}\n`, "") || "None",
+            this.arguments.filter((a) => a instanceof Positional).reduce((acc, p) => acc + `- ${p.name}: ${p.description}\n`, "") || "None",
             "",
             "Optional Arguments: ",
-            this.arguments.filter((a) => a instanceof Optional).reduce((acc, o) => acc + `    ${o.name}: ${o.description}\n`, "") || "None",
+            this.arguments.filter((a) => a instanceof Optional).reduce((acc, o) => acc + `- ${o.name}: ${o.description}\n`, "") || "None",
             "",
             "Flags: ",
-            this.arguments.filter((a) => a instanceof Switch).reduce((acc, f) => acc + `    ${f.name}: ${f.description}\n`, "") || "None",
+            this.arguments.filter((a) => a instanceof Switch).reduce((acc, f) => acc + `-  ${f.name}: ${f.description}\n`, "") || "None",
             "",
             "Subcommands: ",
             this.subcommands.reduce((acc, cmd) => acc + `   ${cmd.name}: ${cmd.help}\n`, "") || "None"
@@ -39,7 +39,7 @@ export class Command {
     constructor()
     constructor(name: string, help: string)
     constructor(name: string, help: string, action: CommandAction)
-    constructor(name: string = "", help: string = "", action: CommandAction = () => UI.echo(UI.yellow("Action not implemented."))) {
+    constructor(name: string = "", help: string = "", action: CommandAction = () => void UI.warning("Action not implemented")) {
         this.name = name;
         this.help = help;
         this.action = action;

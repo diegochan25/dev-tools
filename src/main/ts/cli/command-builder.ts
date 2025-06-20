@@ -10,7 +10,7 @@ export class CommandBuilder {
     private parent: Command | null = null;
     private name: string = "";
     private help: string = "";
-    private action: CommandAction = () => UI.echo(UI.yellow("Action not implemented."));
+    private action: CommandAction = () => void UI.warning("Action not implemented.");
     private arguments: Argument[] = [];
     private subcommands: Command[] = [];
 

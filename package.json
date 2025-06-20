@@ -20,7 +20,8 @@
     "version": "1.0.0",
     "description": "To install dependencies:",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "bun test",
+        "bin": "bun link && bun link dev-tools"
     },
     "repository": {
         "type": "git",

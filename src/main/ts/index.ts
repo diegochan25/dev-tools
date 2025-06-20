@@ -2,10 +2,19 @@
 
 import { Command } from "@cli/command";
 import { CommandBuilder } from "@cli/command-builder";
-import { NestProject } from "./handlers/nest/nest-project";
-import { NestResource } from "./handlers/nest/nest-resource";
-import { NestEntity } from "./handlers/nest/nest-entity";
-import { NestController } from "./handlers/nest/nest-controller";
+import {
+    NestModule,
+    NestController,
+    NestService,
+    NestFilter,
+    NestEntity,
+    NestResource,
+    NestProject,
+    NestPipe,
+    NestGuard,
+    NestInterceptor
+} from "./handlers/nest";
+
 
 // devtools
 const cli = CommandBuilder.buildRoot();
@@ -15,11 +24,16 @@ Command.builder()
     .childOf(cli)
     .setName("nest")
     .setHelp("NestJS file creation commands. Use this command to generate modules, controllers, services, and other NestJS components quickly.")
+    .addChild(NestModule.command)
     .addChild(NestController.command)
+    .addChild(NestService.command)
+    .addChild(NestPipe.command)
+    .addChild(NestFilter.command)
+    .addChild(NestGuard.command)
+    .addChild(NestInterceptor.command)
     .addChild(NestEntity.command)
-    .addChild(NestProject.command)
     .addChild(NestResource.command)
+    .addChild(NestProject.command)
     .build();
 
 cli.traverse(process.argv.slice(2));
-
