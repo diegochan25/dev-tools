@@ -14,6 +14,7 @@ import {
     NestGuard,
     NestInterceptor
 } from "./handlers/nest";
+import { ReactPage } from "./handlers/react/react-page";
 
 
 // devtools
@@ -35,5 +36,13 @@ Command.builder()
     .addChild(NestResource.command)
     .addChild(NestProject.command)
     .build();
+
+// devtools react 
+Command.builder()
+    .childOf(cli)
+    .setName("react")
+    .setHelp("React and Next.js file creation Commands. Use this command to generate pages, views, layouts, and empty css modules.")
+    .addChild(ReactPage.command)
+    .build()
 
 cli.traverse(process.argv.slice(2));

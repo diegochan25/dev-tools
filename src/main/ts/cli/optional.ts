@@ -2,6 +2,7 @@ import { Entry, Enum } from "@/types";
 import { Argument } from "./argument";
 import { UI } from "./ui";
 import { CaseConverter } from "@/lib/case-converter";
+import { randomUUID } from "crypto";
 
 export interface OptionalArgs {
     name: string;
@@ -12,6 +13,7 @@ export interface OptionalArgs {
 }
 
 export class Optional extends Argument {
+    public static readonly FORCE_CHOICE: string  = randomUUID();
     public base: string;
     public options: string[] | Enum;
     public flags: string[];
@@ -28,7 +30,7 @@ export class Optional extends Argument {
         this.flags = flags || [`--${CaseConverter.convert(name).kebab}`];
     }
 
-    public validate(value: string): boolean {
+    public override validate(value: string): boolean {
         if (this.options instanceof Array) {
             return this.options.length === 0 || this.options.includes(value);
         } else {
@@ -36,7 +38,7 @@ export class Optional extends Argument {
         }
     }
 
-    public capture(args: string[]): Entry<string, any> {
+    public override capture(args: string[]): Entry<string, any> {
         let value: string | undefined = undefined;
         for (let i = 0; i < args.length; i++) {
             if (this.flags.includes(args[i])) {

@@ -1,4 +1,5 @@
 import { UI } from "@/cli/ui";
+import { AnyErrorConstructor } from "@/types";
 
 export function abortable(_: object, key: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
@@ -49,4 +50,25 @@ export function requires(...properties: string[]) {
 
         return descriptor;
     };
+}
+
+export function throws(...exceptions: AnyErrorConstructor[]) {
+    return function (_: object, key: string, descriptor: PropertyDescriptor) {
+        const method = descriptor.value;
+
+        descriptor.value = function (...args: any[]) {
+            try {
+                return method.apply(this, args);
+            } catch (error: any) {
+                const e = exceptions.find((e) => error instanceof e);
+                if (e) {
+                    UI.error("Unexpected error of type '%s': %s", e.name, error.message).exit(1);
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        return descriptor;
+    }
 }

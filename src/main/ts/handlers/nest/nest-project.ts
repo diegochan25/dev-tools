@@ -1,6 +1,6 @@
 import { FileModifyTemplate, Mode, PackageManagers, Primitive } from "@/types";
 import { UI } from "@cli/ui";
-import { abortable, requires } from "@lib/decorators";
+import { abortable, throws, requires } from "@lib/decorators";
 import path from "path";
 import { Command } from "@cli/command";
 import { Positional } from "@cli/positional";
@@ -12,10 +12,12 @@ import { File } from "@system/file";
 import { Template } from "@templates/template";
 import { templatepath } from "@lib/consts";
 import { CaseConverter } from "@lib/case-converter";
+import { FileError } from "@/error/file-error";
 
 export class NestProject {
     @abortable
     @requires("path", "package-manager")
+    @throws(FileError)
     public static async action(args: Map<string, Primitive>): Promise<void> {
         const inputpath = args.get("path") as string;
         const packageManager = args.get("package-manager") as PackageManagers;

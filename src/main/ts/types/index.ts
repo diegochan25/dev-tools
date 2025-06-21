@@ -1,3 +1,5 @@
+export type AnyErrorConstructor = new (...args: any[]) => Error;
+
 export interface CaseMap {
     camel: string;
     pascal: string;
@@ -75,3 +77,8 @@ export interface PositionalArgs {
 
 
 export type Primitive = number | string | boolean;
+
+export enum ReactSyntax {
+    JSX = "jsx",
+    TSX = "tsx"
+}

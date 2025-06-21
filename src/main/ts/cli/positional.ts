@@ -18,7 +18,7 @@ export class Positional extends Argument {
         this.options = options || [];
     }
 
-    public validate(value: string): boolean {
+    public override validate(value: string): boolean {
         if (this.options instanceof Array) {
             return this.options.length === 0 || this.options.includes(value);
         } else {
@@ -26,7 +26,7 @@ export class Positional extends Argument {
         }
     }
 
-    public capture(args: string[]): Entry<string, any> {
+    public override capture(args: string[]): Entry<string, any> {
 
         const value = args[this.index];
 

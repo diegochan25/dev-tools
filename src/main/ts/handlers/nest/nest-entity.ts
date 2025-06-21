@@ -9,11 +9,13 @@ import { File } from "@system/file";
 import { Template } from "@templates/template";
 import { templatepath } from "@lib/consts";
 import { Optional } from "@cli/optional";
-import { abortable, requires } from "@lib/decorators";
+import { abortable, throws, requires } from "@lib/decorators";
+import { FileError } from "@/error/file-error";
 
 export class NestEntity {
     @abortable
     @requires("path", "orm")
+    @throws(FileError)
     public static async action(args: Map<string, Primitive>): Promise<void> {
         const inputpath = args.get("path") as string;
         const orm = args.get("orm") as ORMs;
@@ -23,7 +25,7 @@ export class NestEntity {
 
         let name: string = path.basename(workdir.abspath);
         if (path.basename(workdir.abspath) !== path.basename(inputpath)) {
-            name = await UI.ask("Enter a name for the module:");
+            name = await UI.ask("Enter a name for the entity:");
         }
 
         const names = CaseConverter.convert(name);
@@ -78,7 +80,7 @@ export class NestEntity {
     public static get command(): Command {
         return Command.builder()
             .setName("entity")
-            .setHelp("Generate a new NestJS entity.")
+            .setHelp("Create a new NestJS entity.")
             .addArgument(new Positional({
                 name: "path",
                 description: "The path where the entity will be created.",

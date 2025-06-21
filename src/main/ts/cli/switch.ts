@@ -21,10 +21,10 @@ export class Switch extends Argument {
         this.flags = flags || [`--${CaseConverter.convert(name).kebab}`];
     }
 
-    public validate = (_: string) => true;
+    public override validate = (_: string) => true;
 
     
-    public capture(args: string[]): Entry<string, boolean> {
+    public override capture(args: string[]): Entry<string, boolean> {
         return new Entry(this.name, args.some((a) => this.flags.includes(a)));
     }
 }

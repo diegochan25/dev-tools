@@ -1,7 +1,7 @@
 import path from "path";
 import { Command } from "@cli/command";
 import { FileModifyTemplate, Mode, Primitive } from "@/types";
-import { abortable, requires } from "@lib/decorators";
+import { abortable, throws, requires } from "@lib/decorators";
 import { Positional } from "@cli/positional";
 import { File } from "@system/file";
 import { Directory } from "@system/directory";
@@ -10,10 +10,12 @@ import { CaseConverter } from "@/lib/case-converter";
 import { templatepath } from "@/lib/consts";
 import { Template } from "@/templates/template";
 import { readModule, renderModule } from "@/lib/util";
+import { FileError } from "@/error/file-error";
 
 export class NestPipe {
     @abortable
     @requires("path")
+    @throws(FileError)
     public static async action(args: Map<string, Primitive>): Promise<void> {
         const inputpath = args.get("path") as string;
         const workdir = new Directory(path.resolve(inputpath));

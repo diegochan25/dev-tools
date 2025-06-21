@@ -1,60 +1,62 @@
 import path from "path";
 import { Command } from "@cli/command";
-import { FileModifyTemplate, Mode, Primitive } from "@/types";
+import { Optional } from "@cli/optional";
 import { Positional } from "@cli/positional";
-import { Directory } from "@system/directory";
 import { UI } from "@cli/ui";
+import { FileError } from "@error/file-error";
 import { CaseConverter } from "@lib/case-converter";
+import { templatepath } from "@lib/consts";
+import { abortable, requires, throws } from "@lib/decorators";
+import { Directory } from "@system/directory";
 import { File } from "@system/file";
 import { Template } from "@templates/template";
-import { templatepath } from "@lib/consts";
-import { abortable, throws, requires } from "@/lib/decorators";
-import { FileError } from "@/error/file-error";
+import { FileModifyTemplate, Mode, Primitive, ReactSyntax } from "@/types";
 
-export class NestResource {
+
+export class ReactPage {
     @abortable
-    @requires("path")
+    @requires("path", "lang")
     @throws(FileError)
     public static async action(args: Map<string, Primitive>): Promise<void> {
         const inputpath = args.get("path") as string;
+        const lang = args.get("lang") as ReactSyntax;
         const workdir = new Directory(path.resolve(inputpath));
 
         if (!workdir.exists) workdir.makedirs();
 
         let name: string = path.basename(workdir.abspath);
         if (path.basename(workdir.abspath) !== path.basename(inputpath)) {
-            name = await UI.ask("Enter a name for the resource:");
+            name = await UI.ask("Enter a name for the page route:");
         }
 
         const names = CaseConverter.convert(name);
 
-        let files: FileModifyTemplate[] = [
+        const templates: FileModifyTemplate[] = [
             {
-                filename: `${names.kebab}.module.ts`,
-                template: "nest/module.ejs",
+                filename: `layout.${lang}`,
+                template: "react/layout.ejs",
                 mode: Mode.Write
             },
             {
-                filename: `${names.kebab}.controller.ts`,
-                template: "nest/controller.ejs",
+                filename: `page.${lang}`,
+                template: "react/view.ejs",
                 mode: Mode.Write
             },
             {
-                filename: `${names.kebab}.service.ts`,
-                template: "nest/service.ejs",
+                filename: `${names.kebab}.module.css`,
+                template: "react/css-module.ejs",
                 mode: Mode.Write
             }
         ];
 
-        files.forEach((t) => {
+        templates.forEach((t) => {
             const file = new File(workdir.abspath, t.filename);
             file.touch();
             const contents = new Template(templatepath, t.template)
                 .pass({
                     names: names,
-                    useController: true,
-                    useControllerPath: true,
-                    useService: true
+                    useTypescript: lang === ReactSyntax.TSX,
+                    useStyles: true
                 })
                 .render()
                 .lines()
@@ -71,19 +73,26 @@ export class NestResource {
             }
         });
 
-        UI.success("Resource '%s' successfully created with files '%s'!", name, files.map((f) => f.filename).join("', '"));
+        UI.success("Page '%s' has been created with files '%s'!", name, templates.map((t) => t.filename).join("', '")).exit(0);
     }
 
     public static get command(): Command {
         return Command.builder()
-            .setName("resource")
-            .setHelp("Generate a new Nest REST resource.")
+            .setName("page")
+            .setHelp("Create a full Next.js page route")
             .addArgument(new Positional({
                 name: "path",
-                description: "The path where the project will be created.",
+                description: "The path where the Next.js page will be created.",
                 index: 0
             }))
-            .setAction(this.action)
+            .addArgument(new Optional({
+                name: "lang",
+                description: "Choose whether to use JSX with JavaScript or TypeScript syntax",
+                options: ReactSyntax,
+                base: ReactSyntax.JSX,
+                flags: ["--lang"]
+            }))
+            .setAction(this.action) 
             .build();
     }
 }

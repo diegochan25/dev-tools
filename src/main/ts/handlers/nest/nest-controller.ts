@@ -1,7 +1,7 @@
 import path from "path";
 import { Command } from "@cli/command";
 import { FileModifyTemplate, Mode, Primitive } from "@/types";
-import { abortable, requires } from "@lib/decorators";
+import { abortable, throws, requires } from "@lib/decorators";
 import { Positional } from "@cli/positional";
 import { File } from "@system/file";
 import { Directory } from "@system/directory";
@@ -10,10 +10,12 @@ import { CaseConverter } from "@/lib/case-converter";
 import { templatepath } from "@/lib/consts";
 import { Template } from "@/templates/template";
 import { readModule, renderModule } from "@/lib/util";
+import { FileError } from "@/error/file-error";
 
 export class NestController {
     @abortable
     @requires("path")
+    @throws(FileError)
     public static async action(args: Map<string, Primitive>): Promise<void> {
         const inputpath = args.get("path") as string;
         const workdir = new Directory(path.resolve(inputpath));
@@ -46,7 +48,7 @@ export class NestController {
 
         file.writeLines(contents);
 
-        const modulepath: string = 
+        const modulepath: string =
             workdir.files().find((f) => f === `${names.kebab}.module.ts`)
             ||
             workdir.files().find((f) => f.endsWith(".module.ts"))
@@ -56,7 +58,7 @@ export class NestController {
         if (modulepath) {
             const lines = new File(workdir.abspath, modulepath).read().lines();
             const data = readModule(lines);
-            if(!data.controllers.includes(`${names.pascal}Controller`)) {
+            if (!data.controllers.includes(`${names.pascal}Controller`)) {
                 data.moduleImports.push(`import { ${names.pascal}Controller } from "./${names.kebab}.controller";`);
                 data.controllers.push(`${names.pascal}Controller`)
             }
@@ -65,8 +67,8 @@ export class NestController {
             new File(workdir.abspath, modulepath).writeLines(module);
         } else {
             UI.warning(
-                "No module found on directory '%s'. Consider adding a module before implementing '%sController'", 
-                workdir.abspath, 
+                "No module found on directory '%s'. Consider adding a module before implementing '%sController'",
+                workdir.abspath,
                 names.pascal
             );
         }
