@@ -178,8 +178,14 @@ export class NestProject {
         const runtimev = await UI.showLoading(findVersion(runtime, import.meta.dirname), `Finding ${capitalize(runtime)}...`);
         if (!runtimev) UI.error(`${capitalize(runtime)} was not found on this system.`).exit(1);
 
-        const pmv = await UI.showLoading(findVersion(pm, import.meta.dirname), `Finding ${pm}...`);
-        if (!pmv) UI.error(`${pm} was not found on this system.`).exit(1);
+        UI.info("%s version: %s", runtime, runtimev);
+
+        if (pm !== "bun") {
+            const pmv = await UI.showLoading(findVersion(pm, import.meta.dirname), `Finding ${pm}...`);
+            if (!pmv) UI.error(`${pm} was not found on this system.`).exit(1);
+
+            UI.info("%s version: %s", pm, pmv);
+        }
 
         await UI.showLoading(
             new Subprocess([pm, "init", "-y"]).cwd(workdir.abspath).run(),
@@ -219,18 +225,23 @@ export class NestProject {
         rootFiles.forEach((t) => {
             const file = new File(workdir.abspath, t.filename);
             file.touch();
-            const contents = new Template(templatepath, t.template)
-                .pass({
-                    names: CaseConverter.convert("app"),
-                    useController: true,
-                    useControllerPath: false,
-                    useService: true
-                })
-                .render()
-                .lines()
+            let contents: string[] = [];
+            if (t.template) {
+                contents = new Template(templatepath, t.template)
+                    .pass({
+                        names: CaseConverter.convert("app"),
+                        useController: true,
+                        useControllerPath: false,
+                        useService: true
+                    })
+                    .render()
+                    .lines()
+            }
+
             switch (t.mode) {
                 case Mode.Append:
                     file.appendLines(contents);
+                    break;
                 case Mode.Create:
                 case Mode.Write:
                     file.writeLines(contents);

@@ -5,28 +5,27 @@ export function abortable(_: object, key: string, descriptor: PropertyDescriptor
     const method = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-        let running: boolean = true;
-        let interrupted: boolean = false;
+        const controller = new AbortController();
+        const { signal } = controller;
 
-        const stop = () => interrupted = running;
+        const stop = () => {
+            UI.error("Process '" + key + "' interrupted by user.");
+            controller.abort();
+        };
 
         process.once("SIGINT", stop);
 
         try {
-            const result = await method.apply(this, args);
+            const result = await method.apply(this, [...args, signal]);
             return result;
         } finally {
-            running = false;
             process.removeListener("SIGINT", stop);
-            if (interrupted) {
-                UI.error("Process '" + key + "' interrupted by user.");
-                process.exit(1);
-            }
         }
     };
 
     return descriptor;
 }
+
 
 export function requires(...properties: string[]) {
     return function (_: object, key: string, descriptor: PropertyDescriptor) {
