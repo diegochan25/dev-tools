@@ -1,4 +1,5 @@
-<%if (useStyles) {%>import styles from "./<%- names.kebab %>.module.css";
+<% if (useTypescript) {%>import { JSX } from "react";<%}%><%if (useStyles) {%>
+import styles from "./<%- names.kebab %>.module.css";
 
 <%}%>export default function <%- names.pascal %>()<% if (useTypescript) {%>: JSX.Element<%}%> {
     return (

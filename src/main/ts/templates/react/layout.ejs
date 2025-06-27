@@ -1,9 +1,15 @@
-<%if (useStyles) {%>import styles from "./<%- names.kebab %>.module.css";
+<% if (useTypescript) {%>import { JSX, ReactNode } from "react";
+<%}%><%if (useStyles) {%>import styles from "./<%- names.kebab %>.module.css";
 
-<%}%>export default function <%- names.pascal %>Layout()<% if (useTypescript) {%>: JSX.Element<%}%> {
+<%}%>export default function <%- names.pascal %>Layout({ children }<% if (useTypescript) {%>: <%- names.pascal %>LayoutProps<%}%>)<% if (useTypescript) {%>: JSX.Element<%}%> {
     return (
         <>
-            
+            { children }
         </>
     );
+}<% if (useTypescript) { %>
+
+interface <%- names.pascal %>LayoutProps {
+    children: ReactNode;
 }
+<% } %>
