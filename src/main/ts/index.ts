@@ -15,10 +15,19 @@ import {
     NestInterceptor
 } from "./handlers/nest";
 import { ReactPage } from "./handlers/react/react-page";
+import { NodeLambda } from "./handlers/javascript/node-lambda";
 
 
 // devtools
 const cli = CommandBuilder.buildRoot();
+
+// devtools js
+Command.builder()
+    .childOf(cli)
+    .setName("js")
+    .setHelp("Javascript-related utility commands. Use this command to create AWS lambda functions, etc.")
+    .addChild(NodeLambda.command)
+    .build();
 
 // devtools nest
 Command.builder()

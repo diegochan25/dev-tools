@@ -51,6 +51,10 @@ export class ReactPage {
 
         templates.forEach((t) => {
             const file = new File(workdir.abspath, t.filename);
+            if (file.exists && !file.empty) {
+                UI.warning("Directory for page '%s' already exists and contains non-empty files. Aborting to avoid overwriting.", name)
+                    .exit(1);
+            }
             file.touch();
             const contents = new Template(templatepath, t.template)
                 .pass({

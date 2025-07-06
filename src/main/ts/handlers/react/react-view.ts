@@ -39,6 +39,10 @@ export class ReactView {
 
 
         const file = new File(workdir.abspath, template.filename);
+        if (file.exists && !file.empty) {
+            UI.warning("View '%s' already exists and is not empty. Aborting to avoid overwriting.", name)
+                .exit(1);
+        }
         file.touch();
         const contents = new Template(templatepath, template.template)
             .pass({
