@@ -57,7 +57,7 @@ export class NodeLambda {
 
         if (!nodev) UI.error("Node.js was not found on this system.").exit(1);
 
-        UI.info("%Node version: %s", nodev);
+        UI.info("Node version: %s", nodev);
 
         let npmv = await UI.showLoading(findVersion("npm", import.meta.dirname), "Finding npm...");
         let npm = "npm";
@@ -84,10 +84,10 @@ export class NodeLambda {
         const jsonFile = new File(workdir.abspath, "package.json");
         const packageJson = jsonFile.read().json();
 
-        packageJson["name"] = name;
+        packageJson["name"] = name.toLowerCase();
         packageJson["version"] ??= "1.0.0";
         packageJson["type"] = "module";
-        packageJson["main"] = "index.js"
+        packageJson["main"] = "index.js";
         packageJson["scripts"] = scripts;
 
         jsonFile.writeJson(packageJson);
