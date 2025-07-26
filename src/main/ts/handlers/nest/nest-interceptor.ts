@@ -7,10 +7,11 @@ import { File } from "@system/file";
 import { Directory } from "@system/directory";
 import { UI } from "@cli/ui";
 import { CaseConverter } from "@/lib/case-converter";
-import { templatepath } from "@/lib/consts";
+import { strings } from "@resources/strings";
 import { Template } from "@/templates/template";
 import { readModule, renderModule } from "@/lib/util";
 import { FileError } from "@/error/file-error";
+import { ConfigManager } from "@/config/config-manager";
 
 export class NestInterceptor {
     @abortable
@@ -37,16 +38,14 @@ export class NestInterceptor {
 
         const file = new File(workdir.abspath, template.filename);
         file.touch();
-        const contents = new Template(templatepath, template.template)
-            .pass({
-                names: names,
-            })
+        const contents = new Template(strings.TEMPLATE_PATH, template.template)
+            .pass({ names, rules: ConfigManager.createRuleSet() })
             .render()
             .lines()
 
         file.writeLines(contents);
 
-        const modulepath: string = 
+        const modulepath: string =
             workdir.files().find((f) => f === `${names.kebab}.module.ts`)
             ||
             workdir.files().find((f) => f.endsWith(".module.ts"))
@@ -56,7 +55,7 @@ export class NestInterceptor {
         if (modulepath) {
             const lines = new File(workdir.abspath, modulepath).read().lines();
             const data = readModule(lines);
-            if(!data.providers.includes(`${names.pascal}Interceptor`)) {
+            if (!data.providers.includes(`${names.pascal}Interceptor`)) {
                 data.moduleImports.push(`import { ${names.pascal}Interceptor } from "./${names.kebab}.interceptor";`);
                 data.providers.push(`${names.pascal}Interceptor`)
             }
@@ -65,13 +64,13 @@ export class NestInterceptor {
             new File(workdir.abspath, modulepath).writeLines(module);
         } else {
             UI.warning(
-                "No module found on directory '%s'. Consider adding a module before implementing '%sInterceptor'", 
-                workdir.abspath, 
+                "No module found on directory '%s'. Consider adding a module before implementing '%sInterceptor'",
+                workdir.abspath,
                 names.pascal
             );
         }
 
-       UI.success("Interceptor '%sInterceptor' successfully created at '%s'!", names.pascal, workdir.abspath);
+        UI.success("Interceptor '%sInterceptor' successfully created at '%s'!", names.pascal, workdir.abspath);
     }
 
     public static get command(): Command {

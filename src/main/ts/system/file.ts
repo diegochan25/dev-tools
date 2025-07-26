@@ -112,7 +112,7 @@ export class File {
             throw new FileError("Create file at path '" + this.filepath + "' before appending to it.")
         }
 
-        if(this.empty) {
+        if (this.empty) {
             fs.appendFileSync(this.filepath, data.join("\n"), options);
         } else {
             fs.appendFileSync(this.filepath, "\n" + data.join("\n"), options);
@@ -175,8 +175,12 @@ export class File {
         return;
     }
 
-    public json<T = any>(): T {
-        return JSON.parse(this.content) as T;
+    public json<T = any>(): T | undefined {
+        try {
+            return JSON.parse(this.content) as T;
+        } catch (error) {
+            return undefined;
+        }
     }
 
     public text(): string {
@@ -184,6 +188,6 @@ export class File {
     }
 
     public lines(): string[] {
-        return this.content.split(/\r\n|\r|\n/)
+        return this.content.split(/\r\n|\r|\n/);
     }
 }

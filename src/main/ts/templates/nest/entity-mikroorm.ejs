@@ -1,8 +1,8 @@
-import { Entity, PrimaryKey } from "@mikro-orm/core";
-import { v4 as uuidv4 } from "uuid";
+<%- rules.javascript.moduleImporter(["Entity", "PrimaryKey"], "@mikro-orm/core") %>
+<% if (syntax === "sql") { %><%- rules.javascript.moduleImporter(["v4 as uuidv4"], "uuid") %><% } else if (syntax === "mongodb") {%><%- rules.javascript.moduleImporter(["ObjectId"], "mongodb") %><%}%>
 
-@Entity({ tableName: "<%- names.snake %>" })
+@Entity({ tableName: <%- rules.javascript.quote %><% if (syntax === "sql") { %><%- names.pluralSnake %><% } else if (syntax === "mongodb") {%><%- names.pluralCamel %><%}%><%- rules.javascript.quote %> })
 export class <%- names.pascal %> {
     @PrimaryKey()
-    id: string = uuidv4();
+    <% if (syntax === "sql") { %>id: string = uuidv4()<%- rules.javascript.semicolon %><% } else if (syntax === "mongodb") {%>_id?: ObjectId<%- rules.javascript.semicolon %><%}%>
 }

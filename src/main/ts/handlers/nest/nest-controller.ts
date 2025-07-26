@@ -7,10 +7,11 @@ import { File } from "@system/file";
 import { Directory } from "@system/directory";
 import { UI } from "@cli/ui";
 import { CaseConverter } from "@/lib/case-converter";
-import { templatepath } from "@/lib/consts";
+import { strings } from "@resources/strings";
 import { Template } from "@/templates/template";
 import { readModule, renderModule } from "@/lib/util";
 import { FileError } from "@/error/file-error";
+import { ConfigManager } from "@/config/config-manager";
 
 export class NestController {
     @abortable
@@ -37,11 +38,12 @@ export class NestController {
 
         const file = new File(workdir.abspath, template.filename);
         file.touch();
-        const contents = new Template(templatepath, template.template)
+        const contents = new Template(strings.TEMPLATE_PATH, template.template)
             .pass({
                 names: names,
                 useControllerPath: true,
-                useService: workdir.files().some((f) => f === `${names.kebab}.service.ts`)
+                useService: workdir.files().some((f) => f === `${names.kebab}.service.ts`),
+                rules: ConfigManager.createRuleSet()
             })
             .render()
             .lines()

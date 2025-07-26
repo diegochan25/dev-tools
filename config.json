@@ -1,0 +1,22 @@
+{
+    "javascript": {
+        "quotes": "double",
+        "semicolon": "use",
+        "indentation": "space",
+        "tabWidth": 4,
+        "objectSpacing": "space",
+        "filenameCasing": "kebab",
+        "defaultRuntime": "bun",
+        "defaultPackageManager": "bun",
+        "defaultModuleSyntax": "es6"
+    },
+    "nest": {
+        "defaultOrm": "typeorm",
+        "defaultDbSyntax": "mongodb"
+    },
+    "react": {
+        "defaultLang": "jsx",
+        "defaultElementReturnType": "jsx-element",
+        "requireExplicitImport": true
+    }
+}

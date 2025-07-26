@@ -1,9 +1,9 @@
-import { Table, Column, Model, PrimaryKey, Default, DataType } from "sequelize-typescript";
+<%- rules.javascript.moduleImporter(["Table", "Column", "Model", "PrimaryKey", "Default", "DataType"], "sequelize-typescript") %>
 
-@Table({ tableName: "<%- names.snake %>" })
+@Table({ tableName: <%- rules.javascript.quote %><%- names.snake %><%- rules.javascript.quote %> })
 export class <%- names.pascal %> extends Model {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    declare id: string;
+    declare id: string<%- rules.javascript.semicolon %>
 }

@@ -1,8 +1,8 @@
-import { ArgumentMetadata, Injectable, PipeTransform } from "@nestjs/common";
+<%- rules.javascript.moduleImporter(["ArgumentMetadata", "Injectable", "PipeTransform"], "@nestjs/common") %>
 
 @Injectable()
 export class <% names.pascal %>Pipe implements PipeTransform {
     transform(value: any, metadata: ArgumentMetadata) {
-        return value;
+        return value<%- rules.javascript.semicolon %>
     }
 }

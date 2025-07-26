@@ -1,4 +1,5 @@
 import { CaseMap } from "@/types";
+import pluralize from "pluralize";
 
 export class CaseConverter {
     public static convert(input: string): CaseMap {
@@ -10,6 +11,12 @@ export class CaseConverter {
             upper: this.toUpperCase(words),
             kebab: this.toKebabCase(words),
             spaced: this.toSpacedCase(words),
+            pluralCamel: pluralize(this.toCamelCase(words)),
+            pluralPascal: pluralize(this.toPascalCase(words)),
+            pluralSnake: pluralize(this.toSnakeCase(words)),
+            pluralUpper: pluralize(this.toUpperCase(words)),
+            pluralKebab: pluralize(this.toKebabCase(words)),
+            pluralSpaced: pluralize(this.toSpacedCase(words))
         } satisfies CaseMap;
     }
 

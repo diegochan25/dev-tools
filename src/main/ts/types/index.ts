@@ -7,9 +7,16 @@ export interface CaseMap {
     upper: string;
     kebab: string;
     spaced: string;
+    pluralCamel: string;
+    pluralPascal: string;
+    pluralSnake: string;
+    pluralUpper: string;
+    pluralKebab: string;
+    pluralSpaced: string;
 }
 
 export type CommandAction = (args: Map<string, Primitive>) => void | Promise<void>;
+
 
 export class Entry<K, V> {
     key: K;
@@ -19,6 +26,8 @@ export class Entry<K, V> {
         this.value = value;
     }
 }
+
+export type Enum = Record<string, string | number>;
 
 export interface FileModifyTemplate {
     filename: string;
@@ -52,21 +61,12 @@ export interface NestModuleDecorator {
     exports: string[];
 }
 
-export enum ORMs {
-    TypeOrm = "typeorm",
-    Sequelize = "sequelize",
-    Prisma = "prisma",
-    MikroOrm = "mikroorm"
-}
-
 export enum PackageManagers {
     npm = "npm",
     yarn = "yarn",
     pnpm = "pnpm",
     bun = "bun"
 }
-
-export type Enum = Record<string, string | number>;
 
 export interface PositionalArgs {
     name: string;
@@ -75,10 +75,4 @@ export interface PositionalArgs {
     options?: string[] | Enum;
 }
 
-
 export type Primitive = number | string | boolean;
-
-export enum ReactSyntax {
-    JSX = "jsx",
-    TSX = "tsx"
-}

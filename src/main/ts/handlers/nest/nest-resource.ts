@@ -7,9 +7,10 @@ import { UI } from "@cli/ui";
 import { CaseConverter } from "@lib/case-converter";
 import { File } from "@system/file";
 import { Template } from "@templates/template";
-import { templatepath } from "@lib/consts";
+import { strings } from "@resources/strings";
 import { abortable, throws, requires } from "@/lib/decorators";
 import { FileError } from "@/error/file-error";
+import { ConfigManager } from "@/config/config-manager";
 
 export class NestResource {
     @abortable
@@ -49,12 +50,13 @@ export class NestResource {
         files.forEach((t) => {
             const file = new File(workdir.abspath, t.filename);
             file.touch();
-            const contents = new Template(templatepath, t.template)
+            const contents = new Template(strings.TEMPLATE_PATH, t.template)
                 .pass({
                     names: names,
                     useController: true,
                     useControllerPath: true,
-                    useService: true
+                    useService: true,
+                    rules: ConfigManager.createRuleSet()
                 })
                 .render()
                 .lines()

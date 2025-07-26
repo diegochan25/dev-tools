@@ -7,10 +7,11 @@ import { File } from "@system/file";
 import { Directory } from "@system/directory";
 import { UI } from "@cli/ui";
 import { CaseConverter } from "@/lib/case-converter";
-import { templatepath } from "@/lib/consts";
+import { strings } from "@resources/strings";
 import { Template } from "@/templates/template";
 import { readModule, renderModule } from "@/lib/util";
 import { FileError } from "@/error/file-error";
+import { ConfigManager } from "@/config/config-manager";
 
 export class NestService {
     @abortable
@@ -37,16 +38,14 @@ export class NestService {
 
         const file = new File(workdir.abspath, template.filename);
         file.touch();
-        const contents = new Template(templatepath, template.template)
-            .pass({
-                names: names,
-            })
+        const contents = new Template(strings.TEMPLATE_PATH, template.template)
+            .pass({ names, rules: ConfigManager.createRuleSet() })
             .render()
             .lines()
 
         file.writeLines(contents);
 
-        const modulepath: string = 
+        const modulepath: string =
             workdir.files().find((f) => f === `${names.kebab}.module.ts`)
             ||
             workdir.files().find((f) => f.endsWith(".module.ts"))
@@ -56,7 +55,7 @@ export class NestService {
         if (modulepath) {
             const lines = new File(workdir.abspath, modulepath).read().lines();
             const data = readModule(lines);
-            if(!data.providers.includes(`${names.pascal}Service`)) {
+            if (!data.providers.includes(`${names.pascal}Service`)) {
                 data.moduleImports.push(`import { ${names.pascal}Service } from "./${names.kebab}.service";`);
                 data.providers.push(`${names.pascal}Service`)
             }
@@ -65,8 +64,8 @@ export class NestService {
             new File(workdir.abspath, modulepath).writeLines(module);
         } else {
             UI.warning(
-                "No module found on directory '%s'. Consider adding a module before implementing '%sService'", 
-                workdir.abspath, 
+                "No module found on directory '%s'. Consider adding a module before implementing '%sService'",
+                workdir.abspath,
                 names.pascal
             );
         }

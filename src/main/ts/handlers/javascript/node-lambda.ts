@@ -10,8 +10,7 @@ import path from "path";
 import { findVersion } from "@/lib/util";
 import { Subprocess } from "@/system/subprocess";
 import { Template } from "@/templates/template";
-import { templatepath } from "@/lib/consts";
-import { CaseConverter } from "@/lib/case-converter";
+import { strings } from "@resources/strings";
 
 export class NodeLambda {
 
@@ -110,7 +109,7 @@ export class NodeLambda {
             file.touch();
             let contents: string[] = [];
             if (t.template) {
-                contents = new Template(templatepath, t.template)
+                contents = new Template(strings.TEMPLATE_PATH, t.template)
                     .render()
                     .lines()
             }

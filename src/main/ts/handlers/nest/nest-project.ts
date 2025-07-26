@@ -1,4 +1,4 @@
-import { FileModifyTemplate, Mode, PackageManagers, Primitive } from "@/types";
+import { FileModifyTemplate, Mode, Primitive } from "@/types";
 import { UI } from "@cli/ui";
 import { abortable, throws, requires } from "@lib/decorators";
 import path from "path";
@@ -10,9 +10,11 @@ import { Subprocess } from "@system/subprocess";
 import { Directory } from "@system/directory";
 import { File } from "@system/file";
 import { Template } from "@templates/template";
-import { templatepath } from "@lib/consts";
+import { strings } from "@resources/strings";
 import { CaseConverter } from "@lib/case-converter";
 import { FileError } from "@/error/file-error";
+import { JavaScriptPackageManagerRule } from "@/config/config-rules";
+import { ConfigManager } from "@/config/config-manager";
 
 export class NestProject {
     @abortable
@@ -20,7 +22,7 @@ export class NestProject {
     @throws(FileError)
     public static async action(args: Map<string, Primitive>): Promise<void> {
         const inputpath = args.get("path") as string;
-        const packageManager = args.get("package-manager") as PackageManagers;
+        const packageManager = args.get("package-manager") as JavaScriptPackageManagerRule;
 
         const workdir = new Directory(path.resolve(inputpath));
 
@@ -52,8 +54,11 @@ export class NestProject {
             "@nestjs/common",
             "@nestjs/platform-express",
             "reflect-metadata",
-            "rxjs"
+            "rxjs",
+            "class-validator",
+            "class-transformer"
         ];
+        
         let devDependencies: string[] = [
             "@types/node",
             "typescript",
@@ -97,7 +102,7 @@ export class NestProject {
         ];
 
         switch (packageManager) {
-            case PackageManagers.npm:
+            case JavaScriptPackageManagerRule.Npm:
                 runtime = "node";
                 pm = (await findVersion("npm", import.meta.dirname)) ? "npm" : "npm.cmd";
                 install = "install";
@@ -114,7 +119,7 @@ export class NestProject {
                     }
                 );
                 break;
-            case PackageManagers.yarn:
+            case JavaScriptPackageManagerRule.Yarn:
                 runtime = "node";
                 pm = "yarn";
                 rootFiles.push(
@@ -130,7 +135,7 @@ export class NestProject {
                     }
                 );
                 break;
-            case PackageManagers.pnpm:
+            case JavaScriptPackageManagerRule.Pnpm:
                 runtime = "node";
                 pm = "pnpm";
                 rootFiles.push(
@@ -146,7 +151,7 @@ export class NestProject {
                     }
                 );
                 break;
-            case PackageManagers.bun:
+            case JavaScriptPackageManagerRule.Bun:
                 runtime = "bun";
                 pm = "bun";
                 scripts = {
@@ -227,12 +232,13 @@ export class NestProject {
             file.touch();
             let contents: string[] = [];
             if (t.template) {
-                contents = new Template(templatepath, t.template)
+                contents = new Template(strings.TEMPLATE_PATH, t.template)
                     .pass({
                         names: CaseConverter.convert("app"),
                         useController: true,
                         useControllerPath: false,
-                        useService: true
+                        useService: true,
+                        rules: ConfigManager.createRuleSet()
                     })
                     .render()
                     .lines()
@@ -260,12 +266,13 @@ export class NestProject {
             const file = new File(workdir.abspath, "src", t.filename);
             file.touch();
             file.writeLines(
-                new Template(templatepath, t.template)
+                new Template(strings.TEMPLATE_PATH, t.template)
                     .pass({
                         names: CaseConverter.convert("app"),
                         useController: true,
                         useControllerPath: true,
-                        useService: true
+                        useService: true,
+                        rules: ConfigManager.createRuleSet()
                     })
                     .render()
                     .lines()
@@ -289,8 +296,8 @@ export class NestProject {
             .addArgument(new Optional({
                 name: "package-manager",
                 description: "The package manager that will be used when building and scaffolding the project.",
-                options: PackageManagers,
-                base: PackageManagers.npm,
+                options: JavaScriptPackageManagerRule,
+                base: ConfigManager.getConfigProfile().javascript.defaultPackageManager,
                 flags: ["--package-manager", "-pm"]
             }))
             .setAction(this.action)

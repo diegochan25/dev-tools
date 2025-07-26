@@ -5,13 +5,14 @@ import { Positional } from "@cli/positional";
 import { UI } from "@cli/ui";
 import { FileError } from "@error/file-error";
 import { CaseConverter } from "@lib/case-converter";
-import { templatepath } from "@lib/consts";
+import { strings } from "@resources/strings";
 import { abortable, requires, throws } from "@lib/decorators";
 import { Directory } from "@system/directory";
 import { File } from "@system/file";
 import { Template } from "@templates/template";
-import { FileModifyTemplate, Mode, Primitive, ReactSyntax } from "@/types";
-
+import { FileModifyTemplate, Mode, Primitive } from "@/types";
+import { ReactLanguageRule } from "@/config/config-rules";
+import { ConfigManager } from "@/config/config-manager";
 
 export class ReactPage {
     @abortable
@@ -19,7 +20,7 @@ export class ReactPage {
     @throws(FileError)
     public static async action(args: Map<string, Primitive>): Promise<void> {
         const inputpath = args.get("path") as string;
-        const lang = args.get("lang") as ReactSyntax;
+        const lang = args.get("lang") as ReactLanguageRule;
         const workdir = new Directory(path.resolve(inputpath));
 
         if (!workdir.exists) workdir.makedirs();
@@ -56,11 +57,12 @@ export class ReactPage {
                     .exit(1);
             }
             file.touch();
-            const contents = new Template(templatepath, t.template)
+            const contents = new Template(strings.TEMPLATE_PATH, t.template)
                 .pass({
                     names: names,
-                    useTypescript: lang === ReactSyntax.TSX,
-                    useStyles: true
+                    useTypescript: lang === ReactLanguageRule.TSX,
+                    useStyles: true,
+                    rules: ConfigManager.createRuleSet()
                 })
                 .render()
                 .lines()
@@ -92,8 +94,8 @@ export class ReactPage {
             .addArgument(new Optional({
                 name: "lang",
                 description: "Choose whether to use JSX with JavaScript or TypeScript syntax",
-                options: ReactSyntax,
-                base: ReactSyntax.JSX,
+                options: ReactLanguageRule,
+                base: ConfigManager.getConfigProfile().react.defaultLang,
                 flags: ["--lang"]
             }))
             .setAction(this.action) 

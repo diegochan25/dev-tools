@@ -92,6 +92,16 @@ export class UI {
             process.stdin.on("keypress", onKey);
         });
     }
+
+    public static async confirm(question: string): Promise<boolean> {
+        const answer = await UI.loopAsk(
+            `${question} (y/N)`, 
+            (ans) => ["y", "n"].includes(ans.toLowerCase()), 
+            "Please use 'Y/y' to confirm or 'N/n' to reject."
+        );
+        return answer.toLowerCase() === "y";
+    }
+
     public static ask(question: string): Promise<string> {
         return new Promise((resolve) => {
             const sc = readline.createInterface({
@@ -106,11 +116,13 @@ export class UI {
     }
 
     public static async loopAsk(question: string, validator: (answer: string) => boolean, feedback: string = "Invalid input. Try again."): Promise<string> {
-        let answer: string = "";
+        let answer: string;
+        let valid: boolean;
         do {
             answer = await UI.ask(question);
-            if (!validator(answer)) UI.echo(UI.red(feedback));
-        } while (!validator(answer));
+            valid = !validator(answer)
+            if (valid) UI.error(feedback);
+        } while (!valid);
 
         return answer;
     }
@@ -139,7 +151,12 @@ export class UI {
         process.stdout.write(UI.white(util.format(...args) + "\n"));
         return this;
     }
-    
+
+    public static write(...args: any[]): typeof UI {
+        process.stdout.write(util.format(...args) + "\n");
+        return this;
+    }
+
     public static exit(code?: string | number): never {
         return process.exit(code);
     }

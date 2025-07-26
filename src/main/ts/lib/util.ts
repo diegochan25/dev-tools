@@ -1,7 +1,7 @@
 import { UI } from "@cli/ui"
 import { CaseMap, NestModuleDecorator } from "@/types";
 import { Subprocess } from "@system/subprocess"
-import { templatepath } from "./consts";
+import { strings } from "@resources/strings";
 import { Template } from "@templates/template";
 
 export const findVersion = async (cmd: string, cwd: string, message?: string): Promise<string> => {
@@ -69,7 +69,7 @@ export const renderModule = (names: CaseMap, module: NestModuleDecorator) => {
         const k = key as keyof NestModuleDecorator;
         module[k] = [...new Set(module[k])];
     }
-    return new Template(templatepath, "nest/module-base.ejs")
+    return new Template(strings.TEMPLATE_PATH, "nest/module-base.ejs")
         .pass({
             names: names,
             data: module
@@ -77,3 +77,22 @@ export const renderModule = (names: CaseMap, module: NestModuleDecorator) => {
         .render()
         .lines();
 }
+
+export const getNestedProperty = (obj: any, keys: string[]): any => {
+    for (const key of keys) {
+        obj = (obj && typeof obj === "object" && key in obj) ? obj[key] : undefined;
+    }
+    return obj;
+}
+
+export const setNestedProperty = (obj: any, keys: string[], value: any): void => {
+    let current = obj;
+    for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+        if (!(key in current) || typeof current[key] !== 'object' || current[key] === null) {
+            current[key] = {};
+        }
+        current = current[key];
+    }
+    current[keys[keys.length - 1]] = value;
+};

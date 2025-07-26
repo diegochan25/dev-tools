@@ -16,10 +16,23 @@ import {
 } from "./handlers/nest";
 import { ReactPage } from "./handlers/react/react-page";
 import { NodeLambda } from "./handlers/javascript/node-lambda";
+import { ConfigGet } from "./handlers/config/config-get";
+import { ConfigSet } from "./handlers/config/config-set";
+import { ConfigReset } from "./handlers/config/config-reset";
 
 
 // devtools
 const cli = CommandBuilder.buildRoot();
+
+// devtools config
+Command.builder()
+    .childOf(cli)
+    .setName("config")
+    .setHelp("Configure the CLI's preferences.")
+    .addChild(ConfigGet.command)
+    .addChild(ConfigSet.command)
+    .addChild(ConfigReset.command)
+    .build();
 
 // devtools js
 Command.builder()

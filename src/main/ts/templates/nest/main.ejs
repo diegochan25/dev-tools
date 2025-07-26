@@ -1,14 +1,14 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
+<%- rules.javascript.moduleImporter(["NestFactory"], "@nestjs/core") %>
+<%- rules.javascript.moduleImporter(["AppModule"], "./app.module") %>
 
 (async () => {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule)<%- rules.javascript.semicolon %>
 
-    app.enableCors();
-    app.setGlobalPrefix("api");
+    app.enableCors()<%- rules.javascript.semicolon %>
+    app.setGlobalPrefix(<%- rules.javascript.semicolon %>api<%- rules.javascript.semicolon %>)<%- rules.javascript.semicolon %>
 
-    const host = process.env.APP_HOST || "127.0.0.1";
-    const port = process.env.APP_PORT || 3000;
+    const host = process.env.APP_HOST || <%- rules.javascript.semicolon %>127.0.0.1<%- rules.javascript.semicolon %><%- rules.javascript.semicolon %>
+    const port = process.env.APP_PORT || 3000<%- rules.javascript.semicolon %>
 
-    await app.listen(port, () => console.log("App listening on http://%s:%s/", host, port));
-})();
+    await app.listen(port, () => console.log(<%- rules.javascript.semicolon %>App listening on http://%s:%s/<%- rules.javascript.semicolon %>, host, port))<%- rules.javascript.semicolon %>
+})()<%- rules.javascript.semicolon %>

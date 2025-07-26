@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";<% if (useController) {%>
-import { <%- names.pascal %>Controller } from "./<%- names.kebab %>.controller";<%}%><% if (useService) {%>
-import { <%- names.pascal %>Service } from "./<%- names.kebab %>.service";<%}%>
+<%- rules.javascript.moduleImporter(["Module"], "@nestjs/common") %><% if (useController) { %>
+<%- rules.javascript.moduleImporter([`${names.pascal}Controller`], `./${names.kebab}.controller`) %><%}%><% if (useService) {%>
+<%- rules.javascript.moduleImporter([`${names.pascal}Service`], `./${names.kebab}.service`) %><%}%>
 
 @Module({
     imports: [],
