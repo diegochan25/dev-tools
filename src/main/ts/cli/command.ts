@@ -55,7 +55,7 @@ export class Command {
             return UI.echo(UI.white(this.helpString));
         }
         if (args.length === 0) {
-            return this.action(this.parameters);
+            return this.parse(args);
         }
         const subcommand = this.subcommands.find(subcmd => subcmd.name === args[0]);
         if (subcommand) {
@@ -71,6 +71,6 @@ export class Command {
             this.parameters.set(entry.key, entry.value);
         });
 
-        return this.action(this.parameters);
+        this.action(this.parameters);
     }
 }

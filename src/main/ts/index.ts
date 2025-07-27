@@ -19,6 +19,7 @@ import { NodeLambda } from "./handlers/javascript/node-lambda";
 import { ConfigGet } from "./handlers/config/config-get";
 import { ConfigSet } from "./handlers/config/config-set";
 import { ConfigReset } from "./handlers/config/config-reset";
+import { NestRepository } from "./handlers/nest/nest-repository";
 
 
 // devtools
@@ -55,6 +56,7 @@ Command.builder()
     .addChild(NestGuard.command)
     .addChild(NestInterceptor.command)
     .addChild(NestEntity.command)
+    .addChild(NestRepository.command)
     .addChild(NestResource.command)
     .addChild(NestProject.command)
     .build();

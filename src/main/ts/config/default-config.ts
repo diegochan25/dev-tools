@@ -33,7 +33,8 @@ export const DEFAULT_CONFIG = Object.freeze({
     } satisfies JavaScriptConfig,
     nest: {
         defaultOrm: NestORMRule.TypeOrm,
-        defaultDbSyntax: NestDbSyntaxRule.MongoDB
+        defaultDbSyntax: NestDbSyntaxRule.MongoDB,
+        defaultDataSource: "DATA_SOURCE"
     } satisfies NestConfig,
     react: {
         defaultLang: ReactLanguageRule.JSX,

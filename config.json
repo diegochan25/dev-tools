@@ -12,7 +12,8 @@
     },
     "nest": {
         "defaultOrm": "typeorm",
-        "defaultDbSyntax": "mongodb"
+        "defaultDbSyntax": "mongodb",
+        "defaultDataSource": "DATA_SOURCE"
     },
     "react": {
         "defaultLang": "jsx",

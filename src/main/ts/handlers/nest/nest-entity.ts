@@ -71,10 +71,16 @@ export class NestEntity {
         }
 
         const file = new File(workdir.abspath, template.filename);
+
+        if (file.exists && !file.empty) {
+            UI.error("File '%s' already exists and is not empty. Aborting to avoid overwriting", file.abspath)
+                .exit(1);
+        }
+
         file.touch();
         const contents = new Template(strings.TEMPLATE_PATH, template.template)
             .pass({ names, syntax, rules: ConfigManager.createRuleSet() }).render().lines();
-        
+
         if (template.mode === Mode.Write) {
             file.writeLines(contents);
         } else if (template.mode === Mode.Append) {

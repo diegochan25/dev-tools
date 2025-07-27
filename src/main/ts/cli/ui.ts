@@ -1,4 +1,3 @@
-import { Primitive } from "@/types";
 import readline from "readline";
 import util from "util";
 
@@ -7,7 +6,7 @@ export class UI {
     public static gray = (str: string) => "\x1b[90m" + str + "\x1b[0m";
     public static green = (str: string) => "\x1b[92m" + str + "\x1b[0m";
     public static red = (str: string) => "\x1b[91m" + str + "\x1b[0m";
-    public static yellow = (str: string) => "\x1b[93m" + str + "\x1b[0m";
+    public static yellow = (str: string) => "\x1b[33m" + str + "\x1b[0m";
     public static white = (str: string) => "\x1b[97m" + str + "\x1b[0m";
 
     private static spinner = ["◜", "◠", "◝", "◞", "◡", "◟"];
@@ -16,7 +15,6 @@ export class UI {
     private static cursor = " > ";
     private static cr = "\r";
     private static lf = "\n";
-
 
     public static async showLoading<T = any>(
         task: Promise<T> | ((...args: any[]) => Promise<T>),
@@ -42,7 +40,6 @@ export class UI {
             process.stdout.write(`\r\x1B[2K`);
         }
     }
-
 
     public static menuSelect(options: string[], instruction: string = ""): Promise<string> {
         return new Promise((resolve) => {
@@ -96,7 +93,7 @@ export class UI {
     public static async confirm(question: string): Promise<boolean> {
         const answer = await UI.loopAsk(
             `${question} (y/N)`, 
-            (ans) => ["y", "n"].includes(ans.toLowerCase()), 
+            (ans) => ["y", "n"].includes(ans.trim().toLowerCase()), 
             "Please use 'Y/y' to confirm or 'N/n' to reject."
         );
         return answer.toLowerCase() === "y";
@@ -108,7 +105,7 @@ export class UI {
                 input: process.stdin,
                 output: process.stdout
             });
-            sc.question(UI.white(question) + "\n", (answer) => {
+            sc.question(UI.white(question) + this.lf, (answer) => {
                 sc.close();
                 resolve(answer);
             });
@@ -120,46 +117,44 @@ export class UI {
         let valid: boolean;
         do {
             answer = await UI.ask(question);
-            valid = !validator(answer)
-            if (valid) UI.error(feedback);
+            valid = validator(answer)
+            if (!valid) UI.error(feedback);
         } while (!valid);
 
         return answer;
     }
 
     public static success(...args: any[]): typeof UI {
-        process.stdout.write(UI.green(util.format(...args) + "\n"));
+        process.stdout.write(UI.green(util.format(...args) + this.lf));
         return this;
     }
 
     public static warning(...args: any[]): typeof UI {
-        process.stdout.write(UI.yellow(util.format(...args) + "\n"));
+        process.stdout.write(UI.yellow(util.format(...args) + this.lf));
         return this;
     }
 
     public static error(...args: any[]): typeof UI {
-        process.stdout.write(UI.red(util.format(...args) + "\n"));
+        process.stdout.write(UI.red(util.format(...args) + this.lf));
         return this;
     }
 
     public static info(...args: any[]): typeof UI {
-        process.stdout.write(UI.cyan(util.format(...args) + "\n"));
+        process.stdout.write(UI.cyan(util.format(...args) + this.lf));
         return this;
     }
 
     public static echo(...args: any[]): typeof UI {
-        process.stdout.write(UI.white(util.format(...args) + "\n"));
+        process.stdout.write(UI.white(util.format(...args) + this.lf));
         return this;
     }
 
     public static write(...args: any[]): typeof UI {
-        process.stdout.write(util.format(...args) + "\n");
+        process.stdout.write(util.format(...args) + this.lf);
         return this;
     }
 
     public static exit(code?: string | number): never {
         return process.exit(code);
     }
-
 }
-

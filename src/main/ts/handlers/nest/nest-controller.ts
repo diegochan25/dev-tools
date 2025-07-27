@@ -37,6 +37,13 @@ export class NestController {
         }
 
         const file = new File(workdir.abspath, template.filename);
+
+        if (file.exists && !file.empty) {
+            UI.error("File '%s' already exists and is not empty. Aborting to avoid overwriting", file.abspath)
+                .exit(1);
+        }
+
+
         file.touch();
         const contents = new Template(strings.TEMPLATE_PATH, template.template)
             .pass({
@@ -59,9 +66,10 @@ export class NestController {
 
         if (modulepath) {
             const lines = new File(workdir.abspath, modulepath).read().lines();
+            const { quote, objectSpace, semicolon } = ConfigManager.createRuleSet().javascript;
             const data = readModule(lines);
             if (!data.controllers.includes(`${names.pascal}Controller`)) {
-                data.moduleImports.push(`import { ${names.pascal}Controller } from "./${names.kebab}.controller";`);
+                data.moduleImports.push(`import {${objectSpace}${names.pascal}Controller${objectSpace}} from ${quote}./${names.kebab}.controller${quote}${semicolon}`);
                 data.controllers.push(`${names.pascal}Controller`)
             }
             const module = renderModule(names, data);

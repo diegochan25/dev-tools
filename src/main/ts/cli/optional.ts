@@ -13,7 +13,7 @@ export interface OptionalArgs {
 }
 
 export class Optional extends Argument {
-    public static readonly FORCE_CHOICE: string  = randomUUID();
+    public static readonly FORCE_CHOICE: string = randomUUID();
     public base: string;
     public options: string[] | Enum;
     public flags: string[];
@@ -40,25 +40,25 @@ export class Optional extends Argument {
 
     public override capture(args: string[]): Entry<string, any> {
         let value: string | undefined = undefined;
-        for (let i = 0; i < args.length; i++) {
-            if (this.flags.includes(args[i])) {
+        args.forEach((arg, i) => {
+            if (this.flags.includes(arg)) {
                 if (i + 1 >= args.length || args[i + 1].startsWith("-")) {
                     UI.echo(UI.red(`Optional argument '${this.name}' was not passed with a value.`));
                     process.exit(1);
-                }
-                value = args[i + 1];
-                break;
+                } 
+                value = args[i+1];
+                return;
             }
-        }
-
+        })
+        
         if (value) {
             if (this.validate(value)) {
                 return new Entry(this.name, value);
             } else {
-                UI.error("Invalid option '%s' for optional argument '%s'", value, this.name)
+                UI.error("Invalid option '%s' for optional argument '%s'", value, this.name);
                 process.exit(1);
             }
-        } else { 
+        } else {
             return new Entry(this.name, this.base);
         }
     }

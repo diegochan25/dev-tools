@@ -23,8 +23,14 @@ export class Switch extends Argument {
 
     public override validate = (_: string) => true;
 
-    
     public override capture(args: string[]): Entry<string, boolean> {
-        return new Entry(this.name, args.some((a) => this.flags.includes(a)));
+        let value: boolean = false;
+        args.forEach((arg) => {
+            if(this.flags.includes(arg)) {
+                value = true;
+            }
+        })
+
+        return new Entry(this.name, value);
     }
 }

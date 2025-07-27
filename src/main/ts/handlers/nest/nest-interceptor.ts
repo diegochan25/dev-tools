@@ -37,6 +37,12 @@ export class NestInterceptor {
         }
 
         const file = new File(workdir.abspath, template.filename);
+
+        if (file.exists && !file.empty) {
+            UI.error("File '%s' already exists and is not empty. Aborting to avoid overwriting", file.abspath)
+                .exit(1);
+        }
+
         file.touch();
         const contents = new Template(strings.TEMPLATE_PATH, template.template)
             .pass({ names, rules: ConfigManager.createRuleSet() })
@@ -54,9 +60,10 @@ export class NestInterceptor {
 
         if (modulepath) {
             const lines = new File(workdir.abspath, modulepath).read().lines();
+            const { quote, objectSpace, semicolon } = ConfigManager.createRuleSet().javascript;
             const data = readModule(lines);
             if (!data.providers.includes(`${names.pascal}Interceptor`)) {
-                data.moduleImports.push(`import { ${names.pascal}Interceptor } from "./${names.kebab}.interceptor";`);
+                data.moduleImports.push(`import {${objectSpace}${names.pascal}Interceptor${objectSpace}} from ${quote}./${names.kebab}.interceptor${quote}${semicolon}`);
                 data.providers.push(`${names.pascal}Interceptor`)
             }
             const module = renderModule(names, data);

@@ -56,6 +56,7 @@ export class CommandBuilder {
         command.arguments = this.arguments;
         command.subcommands = this.subcommands;
         if (this.parent) this.parent.subcommands.push(command);
+        
         return command;
     }
 

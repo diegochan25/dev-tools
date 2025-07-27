@@ -34,6 +34,7 @@ export interface JavaScriptConfig {
 export interface NestConfig {
     defaultOrm: NestORMRule;
     defaultDbSyntax: NestDbSyntaxRule;
+    defaultDataSource: string;
 }
 
 export interface ReactConfig {

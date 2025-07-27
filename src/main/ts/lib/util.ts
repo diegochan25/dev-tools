@@ -3,6 +3,9 @@ import { CaseMap, NestModuleDecorator } from "@/types";
 import { Subprocess } from "@system/subprocess"
 import { strings } from "@resources/strings";
 import { Template } from "@templates/template";
+import { Directory } from "@system/directory";
+import path from "path";
+import { ConfigManager } from "@/config/config-manager";
 
 export const findVersion = async (cmd: string, cwd: string, message?: string): Promise<string> => {
     try {
@@ -20,6 +23,80 @@ export const findVersion = async (cmd: string, cwd: string, message?: string): P
         return "";
     }
 }
+
+export const findPackageJson = (start: string): string => {
+    const visited = new Set<string>();
+
+    const searchTree = (dirpath: string): string => {
+        const dir = new Directory(dirpath);
+        visited.add(path.resolve(dirpath));
+
+        for (const file of dir.files()) {
+            if (path.basename(file) === "package.json") {
+                return path.resolve(file);
+            }
+        }
+
+        for (const subdir of dir.dirs()) {
+            const resolved = path.resolve(subdir);
+            if (!visited.has(resolved)) {
+                const found = searchTree(resolved);
+                if (found) return found;
+            }
+        }
+
+        return "";
+    };
+
+    let current = path.resolve(start);
+
+    while (true) {
+        const result = searchTree(current);
+        if (result) return result;
+
+        const parent = path.dirname(current);
+        if (parent === current) break;
+        current = parent;
+    }
+
+    return "";
+};
+
+export const addModuleExports = (contents: string[], exports: string[]): string[] => {
+    const { indent, semicolon } = ConfigManager.createRuleSet().javascript;
+
+    let start = -1;
+    let end = -1;
+
+    contents.forEach((line, index) => {
+        if (line.trim().startsWith("module.exports")) {
+            start = index;
+        }
+
+        if (start !== -1 && end === -1 && line.trim() === "}") {
+            end = index;
+        }
+    });
+
+    if (start === -1) {
+        return [...contents, "", "module.exports = {", ...exports.map((e) => indent + e + semicolon), "}" + semicolon];
+    }
+
+    const before = contents.slice(0, end);
+    const after = contents.slice(end);
+
+    const existing = new Set<string>(
+        contents.slice(start + 1, end).map(line => line.trim().replace(semicolon, ""))
+    );
+    const additions = exports.filter(e => !existing.has(e));
+
+    return [
+        ...before,
+        ...additions.map((e) => indent + e + semicolon),
+        ...after
+    ];
+};
+
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 

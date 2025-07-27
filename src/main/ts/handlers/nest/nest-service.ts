@@ -37,6 +37,12 @@ export class NestService {
         }
 
         const file = new File(workdir.abspath, template.filename);
+
+        if (file.exists && !file.empty) {
+            UI.error("File '%s' already exists and is not empty. Aborting to avoid overwriting", file.abspath)
+                .exit(1);
+        }
+
         file.touch();
         const contents = new Template(strings.TEMPLATE_PATH, template.template)
             .pass({ names, rules: ConfigManager.createRuleSet() })
@@ -54,10 +60,11 @@ export class NestService {
 
         if (modulepath) {
             const lines = new File(workdir.abspath, modulepath).read().lines();
+            const { quote, objectSpace, semicolon } = ConfigManager.createRuleSet().javascript;
             const data = readModule(lines);
             if (!data.providers.includes(`${names.pascal}Service`)) {
-                data.moduleImports.push(`import { ${names.pascal}Service } from "./${names.kebab}.service";`);
-                data.providers.push(`${names.pascal}Service`)
+                data.moduleImports.push(`import {${objectSpace}${names.pascal}Service${objectSpace}} from ${quote}./${names.kebab}.service${quote}${semicolon}`);
+                data.providers.push(`${names.pascal}Service`);
             }
             const module = renderModule(names, data);
 

@@ -5,7 +5,7 @@ import { strings } from "@resources/strings";
 import { DEFAULT_CONFIG } from "./default-config";
 import { ConfigRuleSet, JavaScriptRuleSet, NestRuleSet, ReactRuleSet } from "./config-rule-set";
 import { JavaScriptFileNameCasingRule, JavaScriptIndentationRule, JavaScriptModuleSystemRule, JavaScriptObjectSpacingRule, JavaScriptQuoteRule, JavaScriptSemiColonRule, ReactElementReturnTypeRule } from "./config-rules";
-import { CaseConverter } from "@/lib/case-converter";
+import { CaseConverter } from "@lib/case-converter";
 
 export class ConfigManager {
     public static getConfigProfile(): ConfigProfile {

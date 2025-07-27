@@ -44,7 +44,7 @@ export function requires(...properties: string[]) {
                 if (!argMap.has(property)) {
                     UI.error("Error (at '%s'): Please provide a value for the required argument '%s'", key, property).exit(1);
                 }
-            })
+            });
 
             return method.apply(this, args);
         };

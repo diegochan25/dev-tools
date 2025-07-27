@@ -11,6 +11,7 @@ import { strings } from "@resources/strings";
 import { abortable, throws, requires } from "@/lib/decorators";
 import { FileError } from "@/error/file-error";
 import { ConfigManager } from "@/config/config-manager";
+import { findPackageJson, readModule, renderModule } from "@/lib/util";
 
 export class NestResource {
     @abortable
@@ -49,6 +50,12 @@ export class NestResource {
 
         files.forEach((t) => {
             const file = new File(workdir.abspath, t.filename);
+
+            if (file.exists && !file.empty) {
+                UI.error("File '%s' already exists and is not empty. Aborting to avoid overwriting", file.abspath)
+                    .exit(1);
+            }
+
             file.touch();
             const contents = new Template(strings.TEMPLATE_PATH, t.template)
                 .pass({
@@ -73,7 +80,28 @@ export class NestResource {
             }
         });
 
-        UI.success("Resource '%s' successfully created with files '%s'!", name, files.map((f) => f.filename).join("', '"));
+        const modulefile = new File(path.join(findPackageJson(workdir.abspath), "src", "app.module.ts"));
+        
+        if (modulefile.exists) {
+            const lines = modulefile.read().lines();
+            const { quote, objectSpace, semicolon } = ConfigManager.createRuleSet().javascript;
+            const data = readModule(lines);
+            if (!data.imports.includes(`${names.pascal}Module`)) {
+                data.moduleImports.push(`import {${objectSpace}${names.pascal}Module${objectSpace}} from ${quote}./${names.kebab}/${names.kebab}.module${quote}${semicolon}`);
+                data.imports.push(`${names.pascal}Module`)
+            }
+            const module = renderModule(names, data);
+
+            modulefile.writeLines(module);
+        } else {
+            UI.warning(
+                "Module 'AppModule' was not found at 'src' directory. Consider adding the 'AppModule' module before implementing '%sModule'",
+                names.pascal
+            );
+        }
+
+        UI.success("Resource '%s' successfully created with files '%s'!", name, files.map((f) => f.filename).join("', '"))
+            .exit(0);
     }
 
     public static get command(): Command {

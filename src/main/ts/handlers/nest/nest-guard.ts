@@ -37,15 +37,21 @@ export class NestGuard {
         }
 
         const file = new File(workdir.abspath, template.filename);
+
+        if (file.exists && !file.empty) {
+            UI.error("File '%s' already exists and is not empty. Aborting to avoid overwriting", file.abspath)
+                .exit(1);
+        }
+
         file.touch();
         const contents = new Template(strings.TEMPLATE_PATH, template.template)
-            .pass({ names, rules: ConfigManager.createRuleSet()})
+            .pass({ names, rules: ConfigManager.createRuleSet() })
             .render()
             .lines()
 
         file.writeLines(contents);
 
-        const modulepath: string = 
+        const modulepath: string =
             workdir.files().find((f) => f === `${names.kebab}.module.ts`)
             ||
             workdir.files().find((f) => f.endsWith(".module.ts"))
@@ -54,9 +60,10 @@ export class NestGuard {
 
         if (modulepath) {
             const lines = new File(workdir.abspath, modulepath).read().lines();
+            const { quote, objectSpace, semicolon } = ConfigManager.createRuleSet().javascript;
             const data = readModule(lines);
-            if(!data.providers.includes(`${names.pascal}Guard`)) {
-                data.moduleImports.push(`import { ${names.pascal}Guard } from "./${names.kebab}.guard";`);
+            if (!data.providers.includes(`${names.pascal}Guard`)) {
+                data.moduleImports.push(`import {${objectSpace}${names.pascal}Guard${objectSpace}} from ${quote}./${names.kebab}.guard${quote}${semicolon}`);
                 data.providers.push(`${names.pascal}Guard`)
             }
             const module = renderModule(names, data);
@@ -64,8 +71,8 @@ export class NestGuard {
             new File(workdir.abspath, modulepath).writeLines(module);
         } else {
             UI.warning(
-                "No module found on directory '%s'. Consider adding a module before implementing '%sGuard'", 
-                workdir.abspath, 
+                "No module found on directory '%s'. Consider adding a module before implementing '%sGuard'",
+                workdir.abspath,
                 names.pascal
             );
         }

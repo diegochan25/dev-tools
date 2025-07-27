@@ -12,8 +12,9 @@
         "paths": {
             "@resources/*": ["./src/main/resources/*"],
             "@/*": ["./src/main/ts/*"],
-            "@error/*": ["./src/main/ts/error/*"],
             "@cli/*": ["./src/main/ts/cli/*"],
+            "@config/*": ["src/main/ts/config/*"],
+            "@error/*": ["./src/main/ts/error/*"],
             "@handlers/*": ["src/main/ts/handlers/*"],
             "@lib/*": ["src/main/ts/lib/*"],
             "@system/*": ["src/main/ts/system/*"],
