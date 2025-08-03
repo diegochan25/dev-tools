@@ -1,39 +1,12 @@
 {
-    "name": "dev-tools",
-    "module": "src/main.ts",
-    "type": "module",
-    "private": true,
-    "devDependencies": {
-        "@types/bun": "latest",
-        "@types/node": "^24.0.3",
-        "@types/pluralize": "^0.0.33"
-    },
-    "bin": {
-        "devtools": "./src/main/ts/index.ts"
-    },
-    "peerDependencies": {
-        "typescript": "^5"
-    },
-    "dependencies": {
-        "@types/ejs": "^3.1.5",
-        "ejs": "^3.1.10",
-        "pluralize": "^8.0.0"
-    },
-    "version": "1.0.0",
-    "description": "To install dependencies:",
-    "scripts": {
-        "test": "bun test",
-        "bin": "bun link && bun link dev-tools"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/type-crafters/dev-tools.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/type-crafters/dev-tools/issues"
-    },
-    "homepage": "https://github.com/type-crafters/dev-tools#readme"
+  "name": "dev-tools",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
 }

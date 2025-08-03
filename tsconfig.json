@@ -1,24 +1,33 @@
 {
-    "include": ["./src/**/*.ts", "src/main/resources/strings.ts"],
-    "compilerOptions": {
-        "module": "esnext",
-        "target": "esnext",
-        "moduleResolution": "bundler",
-        "esModuleInterop": true,
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "strict": true,
-        "baseUrl": ".",
-        "paths": {
-            "@resources/*": ["./src/main/resources/*"],
-            "@/*": ["./src/main/ts/*"],
-            "@cli/*": ["./src/main/ts/cli/*"],
-            "@config/*": ["src/main/ts/config/*"],
-            "@error/*": ["./src/main/ts/error/*"],
-            "@handlers/*": ["src/main/ts/handlers/*"],
-            "@lib/*": ["src/main/ts/lib/*"],
-            "@system/*": ["src/main/ts/system/*"],
-            "@templates/*": ["src/main/ts/templates/*"],
-        }
-    }
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+        "@/*": ["./src/*"],
+        "@cli/*": ["./src/cli/*"]
+    },
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    // Best practices
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
+  }
 }

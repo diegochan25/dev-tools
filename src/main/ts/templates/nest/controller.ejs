@@ -1,7 +1,0 @@
-<%- rules.javascript.moduleImporter(["Controller"], "@nestjs/common") %><% if (useService) {%>
-<%- rules.javascript.moduleImporter([`${names.pascal}Service`], `./${names.kebab}.service`) %><%}%>
-
-@Controller(<% if (useControllerPath) { %>"<%- names.kebab %>"<% } %>)
-export class <%- names.pascal %>Controller {
-    <% if (useService) {%>constructor(private readonly <%- names.camel %>Service: <%- names.pascal %>Service) { }<%}%>
-}

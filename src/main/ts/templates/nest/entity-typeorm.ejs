@@ -1,9 +1,0 @@
-<% if (syntax === "sql") {%><%- rules.javascript.moduleImporter(["Entity, PrimaryGeneratedColumn"], "typeorm") %><%} else if (syntax === "mongodb") {%><%- rules.javascript.moduleImporter(["Entity, ObjectIdColumn"], "typeorm") %><%}%>
-<% if (syntax === "mongodb") { %><%- rules.javascript.moduleImporter(["ObjectId"], "mongodb") %><% } %>
-
-@Entity(<%- rules.javascript.quote %><% if (syntax === "sql") { %><%- names.pluralSnake %><% } else if (syntax === "mongodb") {%><%- names.pluralCamel %><%}%><%- rules.javascript.quote %>)
-export class <%- names.pascal %> {
-    <% if (syntax === "sql") { %>@PrimaryGeneratedColumn()<% } else if (syntax === "mongodb") {%>@ObjectIdColumn()<%}%>
-    <% if (syntax === "sql") { %>public id?: string<%- rules.javascript.semicolon %><% } else if (syntax === "mongodb") {%>public _id?: ObjectId<%- rules.javascript.semicolon %><%}%>
-}
-

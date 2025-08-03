@@ -1,6 +1,0 @@
-
-model <%- names.pascal %> {
-  <% if (syntax === "sql") { %>id String @id @default(uuid())<% } else if (syntax === "mongodb") { %>_id String @id @default(auto()) @db.ObjectId<% }%>
-
-  @@map("<% if (syntax === "sql") { %><%- names.pluralSnake %><% } else if (syntax === "mongodb") { %><%- names.pluralCamel %><% }%>")
-}   
