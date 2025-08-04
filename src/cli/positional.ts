@@ -1,15 +1,19 @@
-import { Entry, type PositionalArgs, type Primitive } from "@/types";
+import { Entry, type Enum, type PositionalArgs, type Primitive } from "@/types";
 import { Argument } from "./argument";
+import { Write } from "./write";
 
 export class Positional extends Argument {
     private index: number;
+    private options?: Enum<string>;
     constructor({
         name,
         description,
-        index
+        index,
+        options
     }: PositionalArgs) {
         super(name, description);
         this.index = index;
+        this.options = options;
     }
     
     protected override capture(argv: string[]): Entry<string, Primitive> {
@@ -18,15 +22,13 @@ export class Positional extends Argument {
         }
 
         const value = argv[this.index]!;
-
-        if (!this.validate(value)) {
-            throw new Error("Value '' for required argument")
-        }
-
-        return new Entry<string, Primitive>(this.name, argv[this.index]!);
+        this.validate(value);
+        return new Entry<string, Primitive>(this.name, value);
     }
     
-    protected override validate<T>(arg: T): boolean {
-        throw new Error("Method not implemented.");
+    protected override validate(value: string): void | never {
+        if (this.options && !Object.values(this.options).includes(value)) {
+           return Write.red("Value '%s' for required argument '%s' is not acceptable", value, this.name).exit(1);
+        }
     }
 }

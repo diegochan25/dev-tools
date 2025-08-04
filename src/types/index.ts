@@ -18,6 +18,7 @@ export interface PositionalArgs {
     name: string;
     description: string;
     index: number;
+    options?: Enum<string>;
 }
 
 export interface CommandArgs {
@@ -25,4 +26,14 @@ export interface CommandArgs {
     help: string;
     args: Set<Argument>;
     action: Action;
+}
+
+export type Enum<T extends string | number = number> = Record<string, T>;
+
+export interface OptionalArgs {
+    name: string;
+    description: string;
+    options?: Enum<string>;
+    selected?: string;
+    flags: string[]
 }
