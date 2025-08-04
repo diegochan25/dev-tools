@@ -12,6 +12,10 @@ export class Entry<K = any, V = any> {
         this.key = key;
         this.value = value;
     }
+
+    public tuple(): [K, V] {
+        return [this.key, this.value];
+    }
 }
 
 export interface PositionalArgs {
@@ -36,4 +40,10 @@ export interface OptionalArgs {
     options?: Enum<string>;
     selected?: string;
     flags: string[]
+}
+
+export interface SwitchArgs {
+    name: string;
+    description: string;
+    flags: string[];
 }

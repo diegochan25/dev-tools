@@ -220,9 +220,3 @@ export class Write {
         return process.exit(code);
     }
 }
-
-const p = () => new Promise((resolve) => {
-    setTimeout(() => resolve("Cool!"), 5000);
-});
-
-const cool = await Write.load(p);
